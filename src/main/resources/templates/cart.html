@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <link rel="stylesheet" href="/css/cartStyle.css"> <!-- Подключение стилей для корзины -->
+</head>
+<body>
+<div class="container">
+    <div class="nav">
+        <a href="/" class="nav-link">Главная</a>
+        <a href="/cart" class="cart-link">
+            Корзина
+            <span class="cart-count">2</span> <!-- Количество товаров в корзине -->
+        </a>
+        <a href="/login" class="nav-link">Выход</a>
+    </div>
+
+    <h1 class="cart-title">Корзина</h1>
+
+    <table class="cart-table">
+        <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th>Общая стоимость</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Товар 1</td>
+            <td>₽100</td>
+            <td>2</td>
+            <td>₽200</td>
+        </tr>
+        <tr>
+            <td>Товар 2</td>
+            <td>₽150</td>
+            <td>1</td>
+            <td>₽150</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="total">
+        <h3>Итого: 350 ₽</h3>
+        <a href="/" class="btn-continue">Продолжить покупки</a>
+    </div>
+</div>
+</body>
+</html>

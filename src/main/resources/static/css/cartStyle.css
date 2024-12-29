@@ -1,0 +1,119 @@
+/* Основной стиль для контейнера */
+.container {
+    max-width: 1200px; /* Ограничение ширины контейнера */
+    margin: 0 auto; /* Центрирование контейнера */
+    padding: 20px; /* Отступы внутри контейнера */
+}
+
+/* Основной стиль для заголовков */
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 30px; /* Увеличен отступ */
+}
+
+/* Стили таблицы корзины */
+.cart-table {
+    width: 100%;
+    max-width: 900px; /* Ограничение ширины таблицы */
+    margin: 0 auto; /* Центрирование таблицы */
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для ячеек и заголовков таблицы */
+.cart-table th,
+.cart-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Стили для заголовков таблицы */
+.cart-table th {
+    background-color: #007bff;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* Стили для строк таблицы при наведении */
+.cart-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Стили для общей стоимости */
+.total {
+    text-align: right;
+    font-size: 1.5em;
+    margin-top: 20px;
+}
+
+/* Стиль для текста с итоговой суммой */
+.total h3 {
+    color: #333;
+    font-weight: bold;
+}
+
+/* Стили для кнопки "Продолжить покупки" */
+.btn-continue {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 20px;
+}
+
+/* Эффект при наведении на кнопку */
+.btn-continue:hover {
+    background-color: #218838;
+    transform: translateY(-3px);
+}
+
+/* Стиль для кнопки при нажатии */
+.btn-continue:active {
+    transform: translateY(2px);
+}
+
+/* Стили для навигационной панели */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.2em;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Стиль для корзины в навигации */
+.cart-link {
+    position: relative;
+    font-size: 1.2em;
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 1em;
+}
