@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/authservice
-    username: your_db_username
-    password: your_db_password
+    username: admin
+    password: secret
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
