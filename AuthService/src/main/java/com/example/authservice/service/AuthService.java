@@ -25,18 +25,20 @@ public class AuthService {
 //    }
 
     public AuthResponse login(LoginRequest request) {
+
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new RuntimeException("Неверные учетные данные");
         }
         // Заглушка для токена
         return new AuthResponse("fake-jwt-token");
     }
 
     public void register(RegisterRequest request) {
+
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new RuntimeException("Пользователь уже существует");
         }
 
         Role userRole = roleRepository.findByName("USER")
