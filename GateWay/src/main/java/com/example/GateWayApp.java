@@ -12,15 +12,17 @@ public class GateWayApp {
         SpringApplication.run(GateWayApp.class, args);
     }
 
-    @Bean
-    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route("AuthService", r -> r.path("/serviceAuth/**")
-                        .uri("lb://AuthService"))  // Изменено на lb:// для Eureka
-                .route("ProductService", r -> r.path("/serviceProduct/**")
-                        .uri("lb://ProductService"))  // Аналогично для ProductService
-                .route("OrderService", r -> r.path("/serviceOrder/**")
-                        .uri("lb://OrderService"))  // И для OrderService
-                .build();
-    }
+//    @Bean
+//    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+//        return builder.routes()
+//                .route("AuthService", r -> r.path("/serviceAuth/**")
+//                        .uri("lb://AuthService"))
+//                .route("ProductService", r -> r.path("/api/products/**")
+//                        .uri("lb://ProductService"))
+//                .route("OrderService", r -> r.path("/serviceOrder/**")
+//                        .uri("lb://OrderService"))
+//                .route("FrontendService", r -> r.path("/serviceFrontend/**")
+//                        .uri("lb://FrontendService"))
+//                .build();
+//    }
 }

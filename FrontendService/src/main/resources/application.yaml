@@ -1,6 +1,17 @@
 server:
-  port: 3000
+  port: 8085
+
 spring:
   web:
     resources:
       static-locations: classpath:/static/
+  application:
+    name: FrontendService
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+

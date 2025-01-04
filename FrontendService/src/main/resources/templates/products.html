@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product List</title>
+</head>
+<body>
+<h1>Product List</h1>
+<ul>
+    <li th:each="product : ${products}">
+        <span th:text="${product.name}">Product Name</span> -
+        <span th:text="${product.price}">Product Price</span>
+    </li>
+</ul>
+</body>
+</html>

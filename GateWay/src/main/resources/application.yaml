@@ -12,11 +12,15 @@ spring:
         - id: ProductService
           uri: lb://ProductService
           predicates:
-            - Path=/serviceProduct/**
+            - Path=/api/products/**
         - id: OrderService
           uri: lb://OrderService
           predicates:
             - Path=/serviceOrder/**
+        - id: FrontendService
+          uri: lb://FrontendService
+          predicates:
+            - Path=/serviceFrontend/**
 
   application:
     name: GateWay
