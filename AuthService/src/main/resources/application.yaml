@@ -1,18 +1,23 @@
-server:
-  port: 8081
 spring:
   application:
     name: AuthService
-
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/authservice
+    url: jdbc:postgresql://localhost:5432/authservice-db
     username: admin
     password: secret
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: update  # Автоматическое обновление схемы БД
+    show-sql: true  # Показать SQL-запросы в логах
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  # Платформа PostgreSQL для Hibernate
 
+server:
+  port: 8081  # Порт, на котором будет работать сервис
 
-
+## Optional logging configuration for SQL queries
+#logging:
+#  level:
+#    root: INFO
+#    org.hibernate.SQL: DEBUG  # Логирование SQL запросов для отладки
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Логирование значений параметров, передаваемых в запросы

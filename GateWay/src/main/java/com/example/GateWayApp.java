@@ -15,7 +15,12 @@ public class GateWayApp {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("AuthService",r->r.path("/serviceAuth/**")
-                        .uri("http://localhost:8081/")).build();
+                .route("AuthService", r -> r.path("/serviceAuth/**")
+                        .uri("lb://AuthService"))  // Изменено на lb:// для Eureka
+                .route("ProductService", r -> r.path("/serviceProduct/**")
+                        .uri("lb://ProductService"))  // Аналогично для ProductService
+                .route("OrderService", r -> r.path("/serviceOrder/**")
+                        .uri("lb://OrderService"))  // И для OrderService
+                .build();
     }
 }

@@ -1,0 +1,40 @@
+
+services:
+  auth-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: authservice-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"  # Маппинг порта 5432 контейнера на 5432 хоста
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  product-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: productservice-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5433:5432"  # Маппинг порта 5432 контейнера на 5433 хоста
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+
+  order-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: orderservice-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5434:5432"
+    volumes:
+      - order_db_data:/var/lib/postgresql/data
+
+
+volumes:
+  auth_db_data:
+  product_db_data:
+  order_db_data:

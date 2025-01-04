@@ -6,6 +6,10 @@
     <modules>
         <module>AuthService</module>
         <module>GateWay</module>
+        <module>FrontendService</module>
+        <module>EurekaServer</module>
+        <module>ProductService</module>
+        <module>OrderService</module>
     </modules>
 
     <parent>

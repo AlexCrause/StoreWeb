@@ -6,9 +6,24 @@ spring:
     gateway:
       routes:
         - id: AuthService
-          uri: http://localhost:8081/
+          uri: lb://AuthService
           predicates:
             - Path=/serviceAuth/**
+        - id: ProductService
+          uri: lb://ProductService
+          predicates:
+            - Path=/serviceProduct/**
+        - id: OrderService
+          uri: lb://OrderService
+          predicates:
+            - Path=/serviceOrder/**
+
+
 
   application:
-    name: api-gateway
+    name: GateWay
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
