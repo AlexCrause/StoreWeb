@@ -18,12 +18,19 @@ spring:
           predicates:
             - Path=/serviceOrder/**
 
-
-
   application:
     name: GateWay
 
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+
 eureka:
   client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+
