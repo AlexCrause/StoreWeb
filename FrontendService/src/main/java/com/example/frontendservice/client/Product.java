@@ -1,16 +1,21 @@
 package com.example.frontendservice.client;
 
-public class Product {
-    private Long id;
-    private String name;
-    private double price;
+import java.math.BigDecimal;
+import java.util.UUID;
 
-    // Геттеры и сеттеры
-    public Long getId() {
+public class Product {
+
+    private UUID id;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private int stock;
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -22,11 +27,27 @@ public class Product {
         this.name = name;
     }
 
-    public double getPrice() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 }

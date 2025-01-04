@@ -41,18 +41,23 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public void decreaseStock(UUID productId, int quantity) {
+    // Метод для уменьшения stock на 1 и удаления товара, если stock = 0
+    public void decreaseStockAndDelete(UUID productId) {
         Optional<Product> productOpt = productRepository.findById(productId);
 
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
 
-            if (product.getStock() < quantity) {
-                throw new IllegalArgumentException("Not enough stock available");
+            // Уменьшаем stock на 1
+            if (product.getStock() > 0) {
+                product.setStock(product.getStock() - 1);
+                productRepository.save(product);
             }
 
-            product.setStock(product.getStock() - quantity);
-            productRepository.save(product);
+            // Если stock = 0, удаляем товар
+            if (product.getStock() == 0) {
+                productRepository.delete(product);
+            }
         } else {
             throw new IllegalArgumentException("Product not found");
         }

@@ -8,6 +8,7 @@ spring:
   application:
     name: FrontendService
 
+
 eureka:
   client:
     service-url:
@@ -15,3 +16,6 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
+
+gateway:
+  url: http://localhost:8765  # URL для Gateway

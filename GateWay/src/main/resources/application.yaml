@@ -20,7 +20,7 @@ spring:
         - id: FrontendService
           uri: lb://FrontendService
           predicates:
-            - Path=/serviceFrontend/**
+            - Path=/products/**, /products/add/**
 
   application:
     name: GateWay

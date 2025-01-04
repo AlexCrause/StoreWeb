@@ -43,9 +43,11 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/api/v1/products/{productId}/decrease-stock")
-    public void decreaseStock(@PathVariable UUID productId, @RequestParam int quantity) {
-        productService.decreaseStock(productId, quantity); // Логика уменьшения остатков
+    // Endpoint для уменьшения stock и удаления товара
+    @PostMapping("/decreaseAndDelete/{id}")
+    public ResponseEntity<Void> decreaseStockAndDelete(@PathVariable UUID id) {
+        productService.decreaseStockAndDelete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
