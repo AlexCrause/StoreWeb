@@ -1,7 +1,7 @@
 package com.example.frontendservice.controller;
 
 
-import com.example.frontendservice.client.Product;
+import com.example.frontendservice.client.products.Product;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-public class FrontendController {
+public class FrontendProductController {
 
     @Value("${gateway.url}")
     private String gatewayUrl;

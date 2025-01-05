@@ -8,7 +8,7 @@ spring:
         - id: AuthService
           uri: lb://AuthService
           predicates:
-            - Path=/serviceAuth/**
+            - Path=/auth/**
         - id: ProductService
           uri: lb://ProductService
           predicates:
@@ -22,6 +22,19 @@ spring:
           predicates:
             - Path=/products/**, /products/add/**
 
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:8085"  # Домен фронтенда
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
   application:
     name: GateWay
 

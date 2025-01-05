@@ -1,4 +1,4 @@
-package com.example.frontendservice.client;
+package com.example.frontendservice.client.products;
 
 import java.math.BigDecimal;
 import java.util.UUID;
