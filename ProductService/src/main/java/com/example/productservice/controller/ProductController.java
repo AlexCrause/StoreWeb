@@ -5,11 +5,12 @@ import com.example.productservice.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
 
@@ -29,7 +30,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+        Product createdProduct = productService.createProduct(product);
+        return ResponseEntity.created(URI.create("/products/" + createdProduct.getId()))
+                .body(createdProduct);
     }
 
     @PutMapping("/{id}")
@@ -44,10 +47,9 @@ public class ProductController {
     }
 
     // Endpoint для уменьшения stock и удаления товара
-    @PostMapping("/decreaseAndDelete/{id}")
+    @PutMapping("/decreaseAndDelete/{id}")
     public ResponseEntity<Void> decreaseStockAndDelete(@PathVariable UUID id) {
         productService.decreaseStockAndDelete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

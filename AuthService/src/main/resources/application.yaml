@@ -14,7 +14,9 @@ spring:
 
 server:
   port: 8081  # Порт, на котором будет работать сервис
-
+logging:
+  level:
+    root: DEBUG
 eureka:
   client:
     registry-fetch-interval-seconds: 5

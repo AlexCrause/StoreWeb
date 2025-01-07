@@ -1,36 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8"> <!-- Указание кодировки UTF-8 -->
-    <title>Product List</title>
+    <meta charset="UTF-8">
+    <title>Список продуктов</title>
+    <link rel="stylesheet" href="/productsCss/product-listCss.css">
 </head>
 <body>
-<h1>Product List</h1>
-<table border="1">
+<h1>Список продуктов</h1>
+
+<!-- Проверка на пустой список -->
+<div th:if="${products == null || #lists.isEmpty(products)}">
+    <p>Продукты отсутствуют.</p>
+</div>
+
+<!-- Таблица продуктов -->
+<table th:if="${products != null && !#lists.isEmpty(products)}">
     <thead>
     <tr>
-<!--        <th>ID</th>-->
-        <th>Name</th>
-        <th>Price</th>
-        <th>Stock</th>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Количество</th>
+        <th>Действия</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="product : ${products}">
-<!--        <td th:text="${product.id}"></td>-->
         <td th:text="${product.name}"></td>
         <td th:text="${product.price}"></td>
         <td th:text="${product.stock}"></td>
         <td>
             <!-- Кнопка для удаления товара -->
-            <form action="#" th:action="@{/products/delete/{id}(id=${product.id})}" method="post">
-                <button type="submit">Delete</button>
+            <form th:action="@{/products/delete/{id}(id=${product.id})}" method="post">
+                <button type="submit">Удалить</button>
             </form>
+            <!-- Кнопка для редактирования товара -->
+            <a th:href="@{/products/edit/{id}(id=${product.id})}">Редактировать</a>
         </td>
     </tr>
-
     </tbody>
 </table>
-<a href="/products/add">Add New Product</a>
+
+<!-- Ссылка для добавления нового товара -->
+<a href="/products/add">Добавить новый продукт</a>
+
 </body>
 </html>

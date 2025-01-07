@@ -1,20 +1,15 @@
 package com.example.frontendservice.controller;
 
-
-import com.example.frontendservice.client.products.Product;
+import com.example.frontendservice.client.productDTO.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -23,37 +18,67 @@ public class FrontendProductController {
     @Value("${gateway.url}")
     private String gatewayUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final WebClient webClient;
+    private static final Logger logger = LoggerFactory.getLogger(FrontendProductController.class);
 
-    @GetMapping("/products")
-    public String listProducts(Model model) {
-        ResponseEntity<List<Product>> response = restTemplate.exchange(
-                gatewayUrl + "/api/products",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Product>>() {});
-        List<Product> products = response.getBody();
-        model.addAttribute("products", products);
-        return "list-products";
+    public FrontendProductController(@Value("${gateway.url}") String gatewayUrl) {
+        this.webClient = WebClient.builder()
+                .baseUrl(gatewayUrl)
+                .build();
     }
 
+    // Список продуктов
+    @GetMapping("/products")
+    public Mono<String> listProducts(Model model) {
+        return webClient.get()
+                .uri("/products")
+                .retrieve()
+                .bodyToFlux(Product.class)
+                .collectList()
+                .doOnNext(products -> model.addAttribute("products", products))
+                .thenReturn("products/list-products")
+                .onErrorResume(e -> {
+                    logger.error("Error fetching products: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Failed to load products: " + e.getMessage());
+                    return Mono.just("products/list-products"); // Показываем страницу с ошибкой
+                });
+    }
 
+    // Форма для добавления продукта
     @GetMapping("/products/add")
     public String showAddProductForm(Model model) {
         model.addAttribute("product", new Product());
-        return "add-product";
+        return "products/add-product"; // Убедитесь, что шаблон существует
     }
 
+    // Добавление продукта
     @PostMapping("/products/add")
-    public String addProduct(@ModelAttribute Product product) {
-        restTemplate.postForObject(gatewayUrl + "/api/products", product, Product.class);
-        return "redirect:/products";
+    public Mono<String> addProduct(@ModelAttribute Product product, Model model) {
+        return webClient.post()
+                .uri("/products")
+                .bodyValue(product)
+                .retrieve()
+                .bodyToMono(Product.class)
+                .thenReturn("redirect:/products")
+                .onErrorResume(e -> {
+                    logger.error("Error adding product: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Failed to add product: " + e.getMessage());
+                    return Mono.just("products/add-product");
+                });
     }
 
-    // Метод для удаления товара с уменьшением stock на 1
-    @PostMapping("/products/delete/{id}")
-    public String deleteProduct(@PathVariable UUID id) {
-        restTemplate.postForObject(gatewayUrl + "/api/products/decreaseAndDelete/" + id, null, Void.class);
-        return "redirect:/products";
+    // Удаление продукта
+    @DeleteMapping("/products/{id}")
+    public Mono<String> deleteProduct(@PathVariable UUID id, Model model) {
+        return webClient.delete()
+                .uri("/products/{id}", id)
+                .retrieve()
+                .toBodilessEntity()
+                .thenReturn("redirect:/products")
+                .onErrorResume(e -> {
+                    logger.error("Error deleting product: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Failed to delete product: " + e.getMessage());
+                    return Mono.just("products/list-products");
+                });
     }
 }

@@ -6,10 +6,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
-//@Data
+@Data
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -27,6 +28,10 @@ public class User {
     @Column(nullable = false)
     private String role; // ROLE_USER, ROLE_ADMIN
 
+//    @Transient
+//    private String token;  // Добавляем поле для токена (не сохраняется в базе)
+
+    // Геттеры и сеттеры
     public UUID getId() {
         return id;
     }
@@ -58,4 +63,6 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+
 }

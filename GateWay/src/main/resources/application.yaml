@@ -12,15 +12,12 @@ spring:
         - id: ProductService
           uri: lb://ProductService
           predicates:
-            - Path=/api/products/**
+            - Path=/products/**
         - id: OrderService
           uri: lb://OrderService
           predicates:
             - Path=/serviceOrder/**
-        - id: FrontendService
-          uri: lb://FrontendService
-          predicates:
-            - Path=/products/**, /products/add/**
+
 
       globalcors:
         cors-configurations:
@@ -38,14 +35,16 @@ spring:
   application:
     name: GateWay
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
+logging:
+  level:
+    root: DEBUG
+
 
 
 eureka:
   client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
     registry-fetch-interval-seconds: 5
   instance:
     lease-renewal-interval-in-seconds: 5
