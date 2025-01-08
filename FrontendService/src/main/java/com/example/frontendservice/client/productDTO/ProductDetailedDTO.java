@@ -1,7 +1,10 @@
 package com.example.frontendservice.client.productDTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.util.UUID;
+
 
 public class ProductDetailedDTO {
 
@@ -23,7 +26,7 @@ public class ProductDetailedDTO {
     public ProductDetailedDTO() {
     }
 
-    // Геттеры и сеттеры
+
     public UUID getId() {
         return id;
     }

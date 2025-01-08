@@ -1,5 +1,7 @@
 package com.example.frontendservice.client.productDTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 

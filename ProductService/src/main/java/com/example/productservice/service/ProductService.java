@@ -6,20 +6,20 @@ import com.example.productservice.model.Product;
 import com.example.productservice.model.dto.ProductBasicDTO;
 import com.example.productservice.model.dto.ProductDetailedDTO;
 import com.example.productservice.repository.ProductRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    @Autowired
+    private final ProductRepository productRepository;
 
     // Возвращает базовую информацию о всех продуктах
     public List<ProductBasicDTO> getAllBasicProducts() {
@@ -27,12 +27,11 @@ public class ProductService {
                 .map(product -> new ProductBasicDTO(
                         product.getId(),
                         product.getName(),
-                        product.getPrice() // Только базовая информация
+                        product.getPrice()
                 ))
                 .collect(Collectors.toList());
     }
 
-    // Возвращает полную информацию о всех продуктах
     public List<ProductDetailedDTO> getAllDetailedProducts() {
         return productRepository.findAll().stream()
                 .map(product -> new ProductDetailedDTO(
@@ -40,10 +39,11 @@ public class ProductService {
                         product.getName(),
                         product.getDescription(),
                         product.getPrice(),
-                        product.getStock() // Полная информация
+                        product.getStock()
                 ))
                 .collect(Collectors.toList());
     }
+
 
     // Возвращает базовую информацию о продукте по ID
     public ProductBasicDTO getBasicProductById(UUID id) {
@@ -51,7 +51,7 @@ public class ProductService {
         return new ProductBasicDTO(
                 product.getId(),
                 product.getName(),
-                product.getPrice() // Только базовая информация
+                product.getPrice()
         );
     }
 
@@ -63,7 +63,7 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getStock() // Полная информация
+                product.getStock()
         );
     }
 

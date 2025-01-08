@@ -1,10 +1,14 @@
 package com.example.productservice.controller;
 
 
-
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.example.productservice.model.Product;
+import com.example.productservice.model.dto.ProductBasicDTO;
 import com.example.productservice.model.dto.ProductDetailedDTO;
 import com.example.productservice.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +18,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
+
 public class ProductController {
+
+
     private final ProductService productService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -86,12 +94,10 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    // Валидация токена
     private boolean isValidToken(String token) {
-        if (token == null || !token.startsWith("Bearer ")) {
-            return false; // Возвращаем false, если токен отсутствует или невалиден
+        if (token == null) {
+            return false;
         }
-        // Дополнительная логика проверки токена, если требуется
         return true;
     }
 }

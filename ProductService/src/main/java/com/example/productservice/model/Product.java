@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@Table(name = "product")
 public class Product {
 
     //    @Id
@@ -79,6 +80,7 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+
     private String description;
 
     @Column(nullable = false)
@@ -87,26 +89,8 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
-    // Конструктор без параметров (обязателен для JPA)
+
     public Product() {
-    }
-
-    // Конструктор для базового представления
-    public Product(UUID id, String name, BigDecimal price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.description = null;
-        this.stock = 0; // Не включаем stock
-    }
-
-    // Конструктор для полного представления
-    public Product(UUID id, String name, BigDecimal price, String description, int stock) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.stock = stock;
     }
 
     // Getters и setters

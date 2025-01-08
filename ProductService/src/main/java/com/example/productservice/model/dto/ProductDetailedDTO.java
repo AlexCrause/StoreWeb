@@ -1,5 +1,8 @@
 package com.example.productservice.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -7,8 +10,11 @@ public class ProductDetailedDTO {
 
     private UUID id;
     private String name;
+
     private String description;
+
     private BigDecimal price;
+
     private int stock;
 
     // Конструктор

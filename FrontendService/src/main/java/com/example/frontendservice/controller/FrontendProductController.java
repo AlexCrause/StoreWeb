@@ -13,7 +13,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 public class FrontendProductController {
@@ -45,5 +44,27 @@ public class FrontendProductController {
                 });
     }
 
+    @GetMapping("/products/list")
+    public Mono<String> listProductsWithToken(
+            @RequestParam("token") String token, // Получаем токен из параметра запроса
+            Model model) {
+        return webClient.get()
+                .uri("/products") // Путь для получения списка продуктов
+                .headers(headers -> headers.set("Authorization", token)) // Устанавливаем токен в заголовке
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ProductDetailedDTO>>() {}) // Получаем список продуктов
+                //.bodyToMono(ProductDetailedDTO[].class)
+                .doOnNext(products -> {
+                    model.addAttribute("products", products); // Добавляем список в модель
+                    model.addAttribute("token", token); // Передаем токен в шаблон
+                })
+                .thenReturn("products/authList-products")
+                .onErrorResume(e -> {
+                    logger.error("Error fetching products: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Failed to load products: " + e.getMessage());
+                    model.addAttribute("token", token); // Передаем токен даже в случае ошибки
+                    return Mono.just("products/error");
+                });
+    }
 
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Список продуктов</title>
+    <link rel="stylesheet" href="/productsCss/product-listCss.css">
+</head>
+<body>
+<h1>Список продуктов</h1>
+
+<!-- Проверка на пустой список -->
+<div th:if="${products == null || #lists.isEmpty(products)}">
+    <p>Продукты отсутствуют.</p>
+</div>
+
+<!-- Таблица продуктов -->
+<table th:if="${products != null && !#lists.isEmpty(products)}">
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Описание</th>
+        <th>В наличии</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.price}"></td>
+<!--        <td th:text="${product.description != null && !product.description.isEmpty() ? product.description : 'Нет описания'}"></td>-->
+<!--        <td th:text="${product.stock != null ? product.stock : '0'}"></td>-->
+        <td th:text="${product.description}"></td>
+        <td th:text="${product.stock}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Ссылка для добавления нового товара, только если пользователь администратор -->
+<a th:if="${isAdmin}" th:href="@{/products/add(token=${token})}">Добавить новый продукт</a>
+
+</body>
+</html>
