@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/users/dashboardCSS.css">
     <title>Панель управления</title>
 </head>
 <body>
@@ -10,6 +11,6 @@
 <p>Ваш токен: <span th:text="${token}"></span></p>
 
 <!-- Ссылка на список продуктов -->
-<a th:href="@{/products/list(token=${token})}">Перейти к списку продуктов</a>
+<a th:href="@{/products/list-with-admin-check(token=${token})}">Перейти к списку продуктов</a>
 </body>
 </html>

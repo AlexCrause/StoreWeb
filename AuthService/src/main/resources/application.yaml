@@ -11,12 +11,16 @@ spring:
       ddl-auto: update  # Автоматическое обновление схемы БД
     show-sql: true  # Показать SQL-запросы в логах
     database-platform: org.hibernate.dialect.PostgreSQLDialect  # Платформа PostgreSQL для Hibernate
+#    properties:
+#      hibernate:
+#        format_sql: true
+
 
 server:
   port: 8081  # Порт, на котором будет работать сервис
-logging:
-  level:
-    root: DEBUG
+#logging:
+#  level:
+#    root: DEBUG
 eureka:
   client:
     registry-fetch-interval-seconds: 5
@@ -24,3 +28,6 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
+admin:
+  username: admin
+  password: pass

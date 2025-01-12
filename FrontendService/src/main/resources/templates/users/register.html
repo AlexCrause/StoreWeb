@@ -18,10 +18,14 @@
             <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" required>
         </div>
+
         <div>
             <button type="submit">Зарегистрироваться</button>
         </div>
     </form>
+    <div>
+        <p>Есть аккаунт? <a href="/auth/login" methods="post">Войти</a></p>
+    </div>
     <div>
         <!-- Отображение ошибки, если она есть -->
         <p th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></p>

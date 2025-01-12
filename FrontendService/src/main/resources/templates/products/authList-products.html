@@ -4,8 +4,51 @@
     <meta charset="UTF-8">
     <title>Список продуктов</title>
     <link rel="stylesheet" href="/productsCss/product-listCss.css">
+    <link rel="stylesheet" href="/productsCss/button-styles.css">
+    <style>
+        .logout-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px 15px;
+            background-color: #FF6347;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .logout-button:hover {
+            background-color: #FF4500;
+        }
+
+        .add-to-cart-button, .delete-product-button, .add-product-button {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .delete-product-button {
+            background-color: #FF6347;
+        }
+
+        .delete-product-button:hover {
+            background-color: #FF4500;
+        }
+
+        .add-to-cart-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
+<!-- Кнопка "Выйти" -->
+<a th:href="@{/logout(token=${token})}" class="logout-button">Выйти</a>
+
 <h1>Список продуктов</h1>
 
 <!-- Проверка на пустой список -->
@@ -21,22 +64,34 @@
         <th>Цена</th>
         <th>Описание</th>
         <th>В наличии</th>
+        <th th:if="${isUserAuthenticated}">Действия</th>
+        <th th:if="${isAdmin}">Удалить</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="product : ${products}">
         <td th:text="${product.name}"></td>
         <td th:text="${product.price}"></td>
-<!--        <td th:text="${product.description != null && !product.description.isEmpty() ? product.description : 'Нет описания'}"></td>-->
-<!--        <td th:text="${product.stock != null ? product.stock : '0'}"></td>-->
-        <td th:text="${product.description}"></td>
-        <td th:text="${product.stock}"></td>
+        <td th:text="${product.description != null && !product.description.isEmpty() ? product.description : 'Нет описания'}"></td>
+        <td th:text="${product.stock != null ? product.stock : '0'}"></td>
+
+        <!-- Для авторизованного пользователя -->
+        <td th:if="${isUserAuthenticated}">
+            <a th:href="@{/products/addToCart(productId=${product.id}, token=${token})}"
+               class="add-to-cart-button">Добавить в корзину</a>
+        </td>
+
+        <!-- Для администратора -->
+        <td th:if="${isAdmin}">
+            <a th:href="@{/products/delete(productId=${product.id}, token=${token})}"
+               class="delete-product-button" onclick="return confirm('Вы уверены, что хотите удалить этот продукт?')">Удалить</a>
+        </td>
     </tr>
     </tbody>
 </table>
 
 <!-- Ссылка для добавления нового товара, только если пользователь администратор -->
-<a th:if="${isAdmin}" th:href="@{/products/add(token=${token})}">Добавить новый продукт</a>
+<a th:if="${isAdmin}" th:href="@{/products/add(token=${token})}" class="add-product-button">Добавить новый продукт</a>
 
 </body>
 </html>

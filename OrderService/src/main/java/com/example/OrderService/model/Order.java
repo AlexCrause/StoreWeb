@@ -13,14 +13,26 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)  // Обеспечиваем, чтобы идентификатор пользователя был обязательным
+    private UUID userId;
+
+    //@Column(nullable = false)
+    private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")  // Связь с OrderItem через внешний ключ
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(nullable = false)  // Обеспечиваем, чтобы статус был обязательным
     private String status;  // Новый статус заказа
 
-    // Getters и Setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public UUID getId() {
         return id;
@@ -28,6 +40,14 @@ public class Order {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public List<OrderItem> getOrderItems() {

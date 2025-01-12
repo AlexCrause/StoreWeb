@@ -1,6 +1,7 @@
 package com.example.productservice.controller;
 
 
+import com.example.productservice.model.dto.OrderItemRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +25,7 @@ public class ProductController {
 
 
     private final ProductService productService;
-    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -49,6 +51,38 @@ public class ProductController {
         }
         return ResponseEntity.ok(productService.getBasicProductById(id)); // Базовая информация
     }
+
+    // проверяет наличие товара
+//    @GetMapping("/{productId}/availability")
+//    public ResponseEntity<Boolean> checkAvailability(
+//            @PathVariable UUID productId,
+//            @RequestParam Integer quantity) {
+//        ProductDetailedDTO product = productService.getDetailedProductById(productId);
+//        boolean isAvailable = product.getStock() >= quantity;
+//        return ResponseEntity.ok(isAvailable);
+//    }
+    @GetMapping("/{productId}/availability")
+    public ResponseEntity<Boolean> checkAvailability(
+            @PathVariable UUID productId,
+            @RequestParam Integer quantity) {
+        log.info("Получен запрос на проверку доступности товара с ID: {} и количеством: {}", productId, quantity);
+        ProductDetailedDTO product = productService.getDetailedProductById(productId);
+        boolean isAvailable = product.getStock() >= quantity;
+        log.info("Доступность товара: {}", isAvailable);
+        return ResponseEntity.ok(isAvailable);
+    }
+
+
+
+
+    // Получение цены товара
+    @GetMapping("/{id}/price")
+    public ResponseEntity<BigDecimal> getPrice(@PathVariable UUID id) {
+        ProductDetailedDTO product = productService.getDetailedProductById(id);
+        BigDecimal price = product.getPrice();
+        return ResponseEntity.ok(price);
+    }
+
 
     // Создает новый продукт
     @PostMapping
@@ -87,12 +121,12 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    // Уменьшает stock и удаляет товар
-    @PutMapping("/decreaseAndDelete/{id}")
-    public ResponseEntity<Void> decreaseStockAndDelete(@PathVariable UUID id) {
-        productService.decreaseStockAndDelete(id);
+    @PutMapping("/decreaseStock/{id}")
+    public ResponseEntity<Void> decreaseStock(@PathVariable UUID id, @RequestParam int quantity) {
+        productService.decreaseStock(id, quantity);
         return ResponseEntity.noContent().build();
     }
+
 
     private boolean isValidToken(String token) {
         if (token == null) {

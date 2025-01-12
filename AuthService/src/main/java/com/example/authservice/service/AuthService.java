@@ -1,26 +1,40 @@
 package com.example.authservice.service;
 
+import com.example.authservice.config.SecurityConfig;
 import com.example.authservice.exception.InvalidCredentialsException;
 import com.example.authservice.exception.UserNotFoundException;
+import com.example.authservice.model.Role;
 import com.example.authservice.model.User;
+import com.example.authservice.repository.RoleRepository;
 import com.example.authservice.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class AuthService {
+
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    // Константа для роли пользователя
-    private static final String DEFAULT_ROLE = "ROLE_USER";
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -33,9 +47,22 @@ public class AuthService {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new InvalidCredentialsException("Username is already taken");
         }
-        // Устанавливаем роль по умолчанию
-        user.setRole(DEFAULT_ROLE);
-        // Хешируем пароль перед сохранением
+
+        Set<Role> roles = new HashSet<>();
+
+        // Проверяем логин и пароль для роли администратора
+        if (user.getUsername().equals(adminUsername) && user.getPassword().equals(adminPassword)) {
+            Role adminRole = roleRepository.findByName("ADMIN")
+                    .orElseThrow(() -> new InvalidCredentialsException("Role ROLE_ADMIN does not exist"));
+            roles.add(adminRole);
+        } else {
+            Role userRole = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new InvalidCredentialsException("Role ROLE_USER does not exist"));
+            roles.add(userRole);
+        }
+
+        user.setRoles(roles);
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

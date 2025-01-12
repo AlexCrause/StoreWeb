@@ -27,7 +27,9 @@ eureka:
     register-with-eureka: true
 logging:
   level:
-    root: DEBUG
+    root: INFO
+
+
 
 
 

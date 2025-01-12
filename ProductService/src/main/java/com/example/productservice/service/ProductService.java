@@ -2,6 +2,7 @@ package com.example.productservice.service;
 
 
 
+import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.model.Product;
 import com.example.productservice.model.dto.ProductBasicDTO;
 import com.example.productservice.model.dto.ProductDetailedDTO;
@@ -56,8 +57,8 @@ public class ProductService {
     }
 
     // Возвращает полную информацию о продукте по ID
-    public ProductDetailedDTO getDetailedProductById(UUID id) {
-        Product product = getProductById(id);
+    public ProductDetailedDTO getDetailedProductById(UUID productId) {
+        Product product = getProductById(productId);
         return new ProductDetailedDTO(
                 product.getId(),
                 product.getName(),
@@ -66,6 +67,7 @@ public class ProductService {
                 product.getStock()
         );
     }
+
 
     // Создает новый продукт
     public Product createProduct(Product product) {
@@ -82,28 +84,27 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+
+
+    public void decreaseStock(UUID productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Продукт не найден"));
+        product.setStock(product.getStock() - quantity);
+        if (product.getStock() <= 0) {
+            productRepository.delete(product); // Удаляем продукт, если на складе его больше нет
+        } else {
+            productRepository.save(product);
+        }
+    }
     // Удаляет продукт
     public void deleteProduct(UUID id) {
         productRepository.deleteById(id);
     }
 
-    // Метод для уменьшения stock на 1 и удаления товара, если stock = 0
-    public void decreaseStockAndDelete(UUID productId) {
-        Product product = getProductById(productId);
-
-        if (product.getStock() > 0) {
-            product.setStock(product.getStock() - 1);
-            productRepository.save(product);
-        }
-
-        if (product.getStock() == 0) {
-            productRepository.delete(product);
-        }
-    }
 
     // Вспомогательный метод для поиска продукта по ID с обработкой ошибки
-    private Product getProductById(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + id));
+    private Product getProductById(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + productId));
     }
 }

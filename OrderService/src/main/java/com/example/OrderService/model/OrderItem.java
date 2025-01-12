@@ -1,6 +1,8 @@
 package com.example.OrderService.model;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -13,23 +15,23 @@ public class OrderItem {
     @Column(nullable = false)
     private UUID productId; // Идентификатор продукта, связанный с ProductService
 
-    @Column(nullable = false)
-    private String productName; // Название продукта для удобства отображения
+    //@Column(nullable = false)
+    private String name; // Название продукта для удобства отображения
 
     @Column(nullable = false)
     private Integer quantity; // Количество
 
     @Column(nullable = false)
-    private Double price; // Цена за единицу
+    private BigDecimal price; // Цена за единицу (изменено на BigDecimal)
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private Order order; // Связь с заказом
 
     // Вычисляемое поле для общей стоимости
     @Transient
-    public Double getTotalPrice() {
-        return quantity * price;
+    public BigDecimal getTotalPrice() {
+        return price.multiply(BigDecimal.valueOf(quantity)); // Умножаем BigDecimal
     }
 
     // Геттеры и сеттеры
@@ -41,8 +43,8 @@ public class OrderItem {
         return productId;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getName() {
+        return name;
     }
 
     public Integer getQuantity() {
@@ -56,12 +58,12 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
-        if (price < 0) {
+    public void setPrice(BigDecimal price) {
+        if (price.compareTo(BigDecimal.ZERO) < 0) { // Проверка на отрицательную цену
             throw new IllegalArgumentException("Price cannot be negative");
         }
         this.price = price;
@@ -71,4 +73,19 @@ public class OrderItem {
         return order;
     }
 
+    public void setProductId(UUID productId) {
+        this.productId = productId;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }

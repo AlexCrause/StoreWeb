@@ -39,6 +39,9 @@ public class FrontendAuthController {
 
     @PostMapping("/register/user")
     public Mono<String> registerUser(@ModelAttribute UserDTO user, Model model) {
+
+
+
         return webClient.post()
                 .uri("/auth/register")  // Используем другой URI для регистрации
                 .bodyValue(user)

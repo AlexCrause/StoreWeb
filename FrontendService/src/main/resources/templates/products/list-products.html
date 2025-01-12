@@ -8,8 +8,6 @@
 <body>
 <h1>Список продуктов</h1>
 
-<!--<p>Ваш токен: <span th:text="${token}"></span></p>-->
-
 <!-- Проверка на пустой список -->
 <div th:if="${products == null || #lists.isEmpty(products)}">
     <p>Продукты отсутствуют.</p>
@@ -30,9 +28,9 @@
     </tr>
     </tbody>
 </table>
-
-<!-- Ссылка для добавления нового товара, только если пользователь администратор -->
-<a th:if="${isAdmin}" th:href="@{/products/add(token=${token})}">Добавить новый продукт</a>
+<div>
+    <p><a href="/store" methods="post">На главную страницу</a></p>
+</div>
 
 </body>
 </html>

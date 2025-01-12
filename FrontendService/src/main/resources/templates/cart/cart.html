@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="/cartCSS/cart-style.css">
+</head>
+<body>
+<header>
+    <h1>Your Shopping Cart</h1>
+</header>
+
+<main>
+    <!-- Проверяем, есть ли заказ -->
+    <div th:if="${order != null}">
+        <h2>Order Details</h2>
+        <p><strong>Order ID:</strong> <span th:text="${order.id}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${order.status}"></span></p>
+        <p><strong>Total Price:</strong> <span th:text="${order.totalPrice}"></span> USD</p>
+
+        <!-- Таблица товаров -->
+        <h3>Products</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${order.items}">
+                <td th:text="${item.productId}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${item.price}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <form action="/products/addToCart" method="get">
+            <label for="productId">Add Product:</label>
+            <input type="text" id="productId" name="productId" placeholder="Product ID" required>
+            <input type="hidden" name="token" th:value="${token}">
+            <button type="submit">Add to Cart</button>
+        </form>
+    </div>
+
+    <!-- Если заказ пуст -->
+    <div th:if="${order == null}">
+        <p>Your cart is empty!</p>
+        <a href="/products">Go to Products</a>
+    </div>
+
+    <!-- Сообщения -->
+    <div th:if="${successMessage != null}">
+        <p class="success" th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage != null}">
+        <p class="error" th:text="${errorMessage}"></p>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Your Web Market</p>
+</footer>
+</body>
+</html>

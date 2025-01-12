@@ -1,31 +1,64 @@
 package com.example.authservice.util;
 
+import com.example.authservice.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import com.example.authservice.model.User;
+import com.example.authservice.repository.UserRepository;
+
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
 
     // Генерация безопасного ключа для HMAC-SHA256
-    private Key secretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
+    private final Key secretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
 
-    // Генерация JWT
+    private final UserRepository userRepository;
+
+    // Внедрение зависимостей
+    public JwtUtil(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public String generateToken(String username) {
+        // Находим пользователя по имени
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Проверяем, что у пользователя есть роли
+        Set<Role> roles = user.getRoles();
+        if (roles.isEmpty()) {
+            throw new IllegalArgumentException("User has no roles assigned");
+        }
+
+        // Получаем первую роль пользователя (если их несколько)
+        String role = roles.iterator().next().getName();
+
         return Jwts.builder()
                 .setSubject(username)  // Subject — это имя пользователя
+                .claim("role", role)  // Добавляем одну роль в токен как claim
                 .setIssuedAt(new Date())  // Время выдачи токена — текущее время
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))  // Время истечения срока действия (1 час)
                 .signWith(secretKey)  // Подписание JWT с использованием безопасного ключа
                 .compact();  // Создание JWT
     }
 
+
     // Извлечение имени пользователя из токена
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    // Извлечение роли из токена
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     // Извлечение времени истечения срока действия из токена
@@ -34,7 +67,7 @@ public class JwtUtil {
     }
 
     // Извлечение любого другого утверждения (например, имени пользователя)
-    private <T> T extractClaim(String token, ClaimsResolver<T> claimsResolver) {
+    public <T> T extractClaim(String token, ClaimsResolver<T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.resolve(claims);
     }

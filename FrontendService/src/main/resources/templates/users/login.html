@@ -27,6 +27,14 @@
     <div th:if="${errorMessage}" style="color: red;">
         <p th:text="${errorMessage}"></p>
     </div>
+
+    <!-- Ссылка на страницу регистрации -->
+    <div>
+        <p>Нет аккаунта? <a href="/auth/register" methods="post">Зарегистрироваться</a></p>
+    </div>
+    <div>
+        <p><a href="/store" methods="post">На главную страницу</a></p>
+    </div>
 </div>
 </body>
 </html>
