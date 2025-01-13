@@ -11,6 +11,6 @@
 <p>Ваш токен: <span th:text="${token}"></span></p>
 
 <!-- Ссылка на список продуктов -->
-<a th:href="@{/products/list-with-admin-check(token=${token})}">Перейти к списку продуктов</a>
+<a th:href="@{/products/authList-products(token=${token})}">Перейти к списку продуктов</a>
 </body>
 </html>

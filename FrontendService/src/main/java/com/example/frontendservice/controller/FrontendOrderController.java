@@ -6,15 +6,12 @@ import com.example.frontendservice.client.orderDTO.OrderRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,11 +22,11 @@ public class FrontendOrderController {
     @Value("${gateway.url}")
     private String gatewayUrl;
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private static final Logger logger = LoggerFactory.getLogger(FrontendOrderController.class);
 
-    public FrontendOrderController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public FrontendOrderController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl(gatewayUrl).build();
     }
 
     @GetMapping("/products/addToCart")
@@ -46,17 +43,16 @@ public class FrontendOrderController {
             return "products/error";
         }
 
-        // Проверяем существование заказа
-        String checkOrderUrl = gatewayUrl + "/orders/checkOrderExistence";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String checkOrderUrl = "/orders/checkOrderExistence";
 
-        ResponseEntity<Boolean> response = restTemplate.exchange(checkOrderUrl,
-                HttpMethod.GET, entity, Boolean.class);
+        Boolean orderExists = webClient.get()
+                .uri(checkOrderUrl)
+                .header("Authorization", token)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
 
-        response.getBody();
-        if (response.getBody()) {
+        if (Boolean.TRUE.equals(orderExists)) {
             // Если заказ существует, добавляем товар в заказ
             OrderItemRequestDTO orderItem = new OrderItemRequestDTO(productId, 1);
             return addItemToExistingOrder(token, orderItem, model);
@@ -68,17 +64,17 @@ public class FrontendOrderController {
 
     private String addItemToExistingOrder(String token, OrderItemRequestDTO orderItemRequest, Model model) {
         OrderRequestDTO orderRequest = new OrderRequestDTO(token, List.of(orderItemRequest));
+        String addItemUrl = "/orders/addItem";
 
-        String addItemUrl = gatewayUrl + "/orders/addItem";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
-        HttpEntity<OrderRequestDTO> entity = new HttpEntity<>(orderRequest, headers);
+        OrderDTO order = webClient.post()
+                .uri(addItemUrl)
+                .header("Authorization", token)
+                .bodyValue(orderRequest)
+                .retrieve()
+                .bodyToMono(OrderDTO.class)
+                .block();
 
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(addItemUrl,
-                HttpMethod.POST, entity, OrderDTO.class);
-
-        response.getBody();
-        model.addAttribute("order", response.getBody());
+        model.addAttribute("order", order);
         model.addAttribute("successMessage", "Product added to order successfully!");
 
         return "products/authList-products";
@@ -95,17 +91,17 @@ public class FrontendOrderController {
 
         OrderItemRequestDTO orderItemRequest = new OrderItemRequestDTO(productId, 1);
         OrderRequestDTO orderRequest = new OrderRequestDTO(token, List.of(orderItemRequest));
+        String createOrderUrl = "/orders/createOrder";
 
-        String createOrderUrl = gatewayUrl + "/orders/createOrder";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
-        HttpEntity<OrderRequestDTO> entity = new HttpEntity<>(orderRequest, headers);
+        OrderDTO order = webClient.post()
+                .uri(createOrderUrl)
+                .header("Authorization", token)
+                .bodyValue(orderRequest)
+                .retrieve()
+                .bodyToMono(OrderDTO.class)
+                .block();
 
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(createOrderUrl,
-                HttpMethod.POST, entity, OrderDTO.class);
-
-        response.getBody();
-        model.addAttribute("order", response.getBody());
+        model.addAttribute("order", order);
         model.addAttribute("successMessage", "New order created and product added!");
 
         return "products/authList-products";
@@ -113,16 +109,16 @@ public class FrontendOrderController {
 
     @GetMapping("/cart/current")
     public String getCurrentOrder(@RequestParam("token") String token, Model model) {
-        String currentOrderUrl = gatewayUrl + "/orders/current";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String currentOrderUrl = "/orders/current";
 
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(currentOrderUrl, HttpMethod.GET, entity, OrderDTO.class);
+        OrderDTO order = webClient.get()
+                .uri(currentOrderUrl)
+                .header("Authorization", token)
+                .retrieve()
+                .bodyToMono(OrderDTO.class)
+                .block();
 
-        response.getBody();
-        model.addAttribute("order", response.getBody());
+        model.addAttribute("order", order);
         return "cart/cart";
-
     }
 }

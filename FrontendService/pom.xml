@@ -48,6 +48,9 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+
+
+
         <!-- Spring Boot Actuator (для мониторинга и управления) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

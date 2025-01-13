@@ -10,6 +10,7 @@ import com.example.productservice.model.dto.ProductBasicDTO;
 import com.example.productservice.model.dto.ProductDetailedDTO;
 import com.example.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,35 @@ public class ProductController {
             return ResponseEntity.ok(productService.getAllDetailedProducts()); // Полная информация
         }
         return ResponseEntity.ok(productService.getAllBasicProducts()); // Базовая информация
+    }
+
+    /**
+     * Обрабатывает запрос на создание нового продукта.
+     *
+     * @param authorization Токен авторизации
+     * @param productDTO    DTO с данными нового продукта
+     * @return ResponseEntity с информацией о созданном продукте
+     */
+    @PostMapping
+    public ResponseEntity<?> createProduct(@RequestHeader("Authorization") String authorization,
+                                           @RequestBody ProductDetailedDTO productDTO) {
+        if (!isValidToken(authorization)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid token");
+        }
+
+        // Преобразование и создание продукта через сервис
+        Product createdProduct = productService.createProduct(productDTO);
+
+        // Возвращаем ответ с созданным продуктом
+        return ResponseEntity
+                .created(URI.create("/products/" + createdProduct.getId()))
+                .body(new ProductDetailedDTO(
+                        createdProduct.getId(),
+                        createdProduct.getName(),
+                        createdProduct.getDescription(),
+                        createdProduct.getPrice(),
+                        createdProduct.getStock()
+                ));
     }
 
     // Возвращает продукт по ID
@@ -84,21 +114,8 @@ public class ProductController {
     }
 
 
-    // Создает новый продукт
-    @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
-        // Для ответа использовать DTO, а не сущность
-        return ResponseEntity
-                .created(URI.create("/products/" + createdProduct.getId()))
-                .body(new ProductDetailedDTO(
-                        createdProduct.getId(),
-                        createdProduct.getName(),
-                        createdProduct.getDescription(),
-                        createdProduct.getPrice(),
-                        createdProduct.getStock()
-                ));
-    }
+
+
 
     // Обновляет информацию о продукте
     @PutMapping("/{id}")

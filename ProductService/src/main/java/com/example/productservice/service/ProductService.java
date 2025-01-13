@@ -69,8 +69,22 @@ public class ProductService {
     }
 
 
-    // Создает новый продукт
-    public Product createProduct(Product product) {
+    /**
+     * Создает новый продукт, преобразуя DTO в сущность.
+     *
+     * @param productDTO DTO с данными продукта
+     * @return созданный продукт
+     */
+    public Product createProduct(ProductDetailedDTO productDTO) {
+        // Преобразование DTO в сущность Product
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setStock(productDTO.getStock());
+
+        // Сохранение продукта в репозитории
         return productRepository.save(product);
     }
 

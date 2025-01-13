@@ -4,44 +4,59 @@
     <meta charset="UTF-8">
     <title>Список продуктов</title>
     <link rel="stylesheet" href="/productsCss/product-listCss.css">
-    <link rel="stylesheet" href="/productsCss/button-styles.css">
     <style>
+        /* Стиль для кнопки "Выйти" */
         .logout-button {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 10px 15px;
-            background-color: #FF6347;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            z-index: 1000;
+            position: fixed; /* Фиксированное положение на экране */
+            top: 10px; /* Отступ сверху */
+            right: 10px; /* Отступ справа */
+            padding: 10px 15px; /* Отступы внутри кнопки */
+            background-color: #FF6347; /* Цвет фона */
+            color: #fff; /* Цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+/*            z-index: 1000; *//* Обеспечивает, чтобы кнопка была поверх других элементов */
         }
 
+        /* Стиль при наведении на кнопку "Выйти" */
         .logout-button:hover {
-            background-color: #FF4500;
+            background-color: #FF4500; /* Цвет фона при наведении */
         }
 
-        .add-to-cart-button, .delete-product-button, .add-product-button {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 5px;
+        /* Общие стили для кнопок (добавление в корзину, удаление, изменение, добавление продукта) */
+        .add-to-cart-button, .delete-product-button, .add-product-button, .edit-product-button {
+            display: inline-block; /* Блоки на одной линии */
+            padding: 5px 10px; /* Отступы внутри кнопок */
+            background-color: #4CAF50; /* Основной цвет фона */
+            color: white; /* Цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+            margin: 5px; /* Отступы между кнопками */
         }
 
+        /* Стиль для кнопки удаления продукта */
         .delete-product-button {
-            background-color: #FF6347;
+            background-color: #FF6347; /* Красный цвет фона */
         }
 
+        /* Стиль при наведении на кнопку удаления продукта */
         .delete-product-button:hover {
-            background-color: #FF4500;
+            background-color: #FF4500; /* Цвет фона при наведении */
         }
 
+        /* Стиль при наведении на кнопку добавления в корзину */
         .add-to-cart-button:hover {
-            background-color: #45a049;
+            background-color: #45a049; /* Цвет фона при наведении */
+        }
+
+        /* Стиль для кнопки изменения продукта */
+        .edit-product-button {
+            background-color: #FFA500; /* Оранжевый цвет фона */
+        }
+
+        /* Стиль при наведении на кнопку изменения продукта */
+        .edit-product-button:hover {
+            background-color: #FF8C00; /* Цвет фона при наведении */
         }
     </style>
 </head>
@@ -64,7 +79,8 @@
         <th>Цена</th>
         <th>Описание</th>
         <th>В наличии</th>
-        <th th:if="${isUserAuthenticated}">Действия</th>
+        <th th:if="${isUserAuthenticated}">Приобрести</th>
+        <th th:if="${isAdmin}">Изменить</th>
         <th th:if="${isAdmin}">Удалить</th>
     </tr>
     </thead>
@@ -79,6 +95,11 @@
         <td th:if="${isUserAuthenticated}">
             <a th:href="@{/products/addToCart(productId=${product.id}, token=${token})}"
                class="add-to-cart-button">Добавить в корзину</a>
+        </td>
+
+        <td th:if="${isAdmin}">
+            <a th:href="@{/products/edit(productId=${product.id}, token=${token})}"
+               class="edit-product-button">Изменить</a>
         </td>
 
         <!-- Для администратора -->
