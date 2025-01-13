@@ -71,6 +71,32 @@ public class ProductController {
                 ));
     }
 
+
+    /**
+     * Обрабатывает запрос на обновление информации о продукте.
+     * <p>
+     * Этот метод принимает данные продукта в формате DTO, передает их в сервис
+     * для обновления информации и возвращает обновленный объект в формате DTO.
+     *
+     * @param id         идентификатор продукта, который необходимо обновить
+     * @param productDTO объект DTO с обновленными данными продукта
+     * @return ResponseEntity с обновленным объектом ProductDetailedDTO и статусом 200 OK
+     */
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable UUID id,
+                                           @RequestBody ProductDetailedDTO productDTO) {
+        // Вызываем метод сервиса, передавая DTO
+        ProductDetailedDTO updatedProductDTO = productService.updateProduct(id, productDTO);
+
+        // Возвращаем DTO в ответе
+        return ResponseEntity.ok(updatedProductDTO);
+    }
+
+
+
+
+
     // Возвращает продукт по ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(
@@ -117,19 +143,8 @@ public class ProductController {
 
 
 
-    // Обновляет информацию о продукте
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable UUID id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        // Для ответа использовать DTO, а не сущность
-        return ResponseEntity.ok(new ProductDetailedDTO(
-                updatedProduct.getId(),
-                updatedProduct.getName(),
-                updatedProduct.getDescription(),
-                updatedProduct.getPrice(),
-                updatedProduct.getStock()
-        ));
-    }
+
+
 
     // Удаляет продукт
     @DeleteMapping("/{id}")

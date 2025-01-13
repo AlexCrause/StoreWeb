@@ -14,6 +14,7 @@ import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 //@RequestMapping("/products")
@@ -105,6 +106,71 @@ public class FrontendProductController {
                     return Mono.just("redirect:/products?error=failed-to-add-product");
                 });
     }
+
+
+    /**
+     * Метод отображает форму для изменения продукта.
+     * Пользователь должен быть авторизован (администратор), чтобы использовать эту форму.
+     *
+     * @param productId ID продукта, который нужно отредактировать
+     * @param token токен администратора
+     * @param model объект Model для передачи данных в представление
+     * @return представление "products/edit-product" с формой для изменения товара
+     */
+    @GetMapping("products/edit")
+    public Mono<String> showEditProductForm(@RequestParam("productId") UUID productId,
+                                            @RequestParam("token") String token,
+                                            Model model) {
+        logger.info("Запрос на отображение формы редактирования товара с ID: {}", productId);
+
+        return webClient.get()
+                .uri("/products/{id}", productId)
+                .headers(headers -> headers.set("Authorization", "Bearer " + token))
+                .retrieve()
+                .bodyToMono(ProductDetailedDTO.class)
+                .doOnNext(product -> {
+                    logger.info("Получены данные товара для редактирования: {}", product);
+                    model.addAttribute("product", product);
+                    model.addAttribute("token", token);
+                })
+                .thenReturn("products/edit-product")
+                .onErrorResume(e -> {
+                    logger.error("Ошибка при получении данных товара для редактирования: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Не удалось загрузить данные товара для редактирования.");
+                    return Mono.just("products/error");
+                });
+    }
+
+    /**
+     * Метод обрабатывает отправку формы для изменения продукта.
+     * Продукт обновляется с использованием токена администратора.
+     *
+     * @param product объект DTO с измененными данными продукта
+     * @param productId ID продукта, который нужно обновить
+     * @param token токен администратора
+     * @return перенаправление на страницу со списком продуктов
+     */
+    @PostMapping("products/edit")
+    public Mono<String> editProduct(@ModelAttribute ProductDetailedDTO product,
+                                    @RequestParam("productId") UUID productId,
+                                    @RequestParam("token") String token) {
+        logger.info("Отправка запроса на обновление товара с ID: {}", productId);
+        // Убедимся, что ID продукта установлен
+        product.setId(productId);
+        return webClient.put()
+                .uri("/products/edit/{id}", productId)
+                .headers(headers -> headers.set("Authorization", "Bearer " + token))
+                .bodyValue(product)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .doOnSuccess(unused -> logger.info("Товар с ID {} успешно обновлен.", productId))
+                .thenReturn("redirect:/products/authList-products?token=" + token)
+                .onErrorResume(e -> {
+                    logger.error("Ошибка при обновлении товара: {}", e.getMessage(), e);
+                    return Mono.just("redirect:/products?error=failed-to-edit-product");
+                });
+    }
+
 
     /**
      * Обрабатывает запрос на отображение списка продуктов для авторизованного пользователя.

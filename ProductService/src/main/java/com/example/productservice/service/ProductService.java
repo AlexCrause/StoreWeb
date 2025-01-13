@@ -10,6 +10,7 @@ import com.example.productservice.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +22,65 @@ public class ProductService {
 
     @Autowired
     private final ProductRepository productRepository;
+
+    /**
+     * Создает новый продукт, преобразуя DTO в сущность.
+     *
+     * @param productDTO DTO с данными продукта
+     * @return созданный продукт
+     */
+    public Product createProduct(ProductDetailedDTO productDTO) {
+        // Преобразование DTO в сущность Product
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setStock(productDTO.getStock());
+
+        // Сохранение продукта в репозитории
+        return productRepository.save(product);
+    }
+
+
+    /**
+     * Обновляет информацию о продукте в базе данных.
+     * <p>
+     * Метод выполняет следующие действия:
+     * 1. Преобразует входящий объект DTO в сущность `Product`.
+     * 2. Использует репозиторий для сохранения обновленной сущности в базе данных.
+     * 3. Преобразует обновленную сущность обратно в объект DTO для возврата.
+     * <p>
+     * Аннотация {@code @Transactional} гарантирует, что все операции с базой данных
+     * выполняются в одной транзакции, и при возникновении исключений изменения будут откатаны.
+     *
+     * @param id         идентификатор продукта, который необходимо обновить
+     * @param productDTO объект DTO с обновленными данными продукта
+     * @return обновленный объект ProductDetailedDTO
+     */
+    @Transactional
+    public ProductDetailedDTO updateProduct(UUID id, ProductDetailedDTO productDTO) {
+        // Преобразуем DTO в сущность
+        Product product = new Product();
+        product.setId(id);
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setStock(productDTO.getStock());
+
+        // Обновляем продукт в базе данных
+        Product updatedProduct = productRepository.save(product);
+
+        // Преобразуем обновленную сущность обратно в DTO для ответа
+        return new ProductDetailedDTO(
+                updatedProduct.getId(),
+                updatedProduct.getName(),
+                updatedProduct.getDescription(),
+                updatedProduct.getPrice(),
+                updatedProduct.getStock()
+        );
+    }
+
 
     // Возвращает базовую информацию о всех продуктах
     public List<ProductBasicDTO> getAllBasicProducts() {
@@ -67,37 +127,6 @@ public class ProductService {
                 product.getStock()
         );
     }
-
-
-    /**
-     * Создает новый продукт, преобразуя DTO в сущность.
-     *
-     * @param productDTO DTO с данными продукта
-     * @return созданный продукт
-     */
-    public Product createProduct(ProductDetailedDTO productDTO) {
-        // Преобразование DTO в сущность Product
-        Product product = new Product();
-        product.setId(productDTO.getId());
-        product.setName(productDTO.getName());
-        product.setDescription(productDTO.getDescription());
-        product.setPrice(productDTO.getPrice());
-        product.setStock(productDTO.getStock());
-
-        // Сохранение продукта в репозитории
-        return productRepository.save(product);
-    }
-
-    // Обновляет продукт
-    public Product updateProduct(UUID id, Product productDetails) {
-        Product product = getProductById(id);
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setPrice(productDetails.getPrice());
-        product.setStock(productDetails.getStock());
-        return productRepository.save(product);
-    }
-
 
 
     public void decreaseStock(UUID productId, int quantity) {
