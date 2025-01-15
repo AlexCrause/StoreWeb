@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
+
 import java.util.List;
 import java.util.UUID;
 
@@ -71,7 +72,7 @@ public class FrontendProductController {
      * @param model объект Model для передачи данных в представление
      * @return представление "products/add-product" с формой для добавления нового товара
      */
-    @GetMapping("products/add")
+    @GetMapping("/products/add")
     public String showAddProductForm(@RequestParam("token") String token, Model model) {
         logger.info("Запрос на отображение формы добавления нового товара.");
         model.addAttribute("token", token);
@@ -171,6 +172,64 @@ public class FrontendProductController {
                 });
     }
 
+    /**
+     * Метод отображает форму для подтверждения удаления продукта.
+     * Пользователь должен быть авторизован (администратор).
+     *
+     * @param productId ID продукта, который нужно удалить
+     * @param token токен администратора
+     * @param model объект Model для передачи данных в представление
+     * @return представление "products/delete-product" с формой подтверждения
+     */
+    @GetMapping("products/delete")
+    public Mono<String> showDeleteProductForm(@RequestParam("productId") UUID productId,
+                                              @RequestParam("token") String token,
+                                              Model model) {
+        logger.info("Полученные параметры: productId = {}, token = {}", productId, token);
+
+        return webClient.get()
+                .uri("/products/{id}", productId)
+                .headers(headers -> headers.set("Authorization", "Bearer " + token))
+                .retrieve()
+                .bodyToMono(ProductDetailedDTO.class)
+                .doOnNext(product -> {
+                    logger.info("Получены данные товара для удаления: {}", product);
+                    model.addAttribute("product", product);
+                    model.addAttribute("token", token);
+                })
+                .thenReturn("products/delete-product")
+                .onErrorResume(e -> {
+                    logger.error("Ошибка при получении данных товара для удаления: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Не удалось загрузить данные товара для удаления.");
+                    return Mono.just("products/error");
+                });
+    }
+
+    /**
+     * Обрабатывает запрос на удаление продукта.
+     * Продукт удаляется с использованием токена администратора.
+     *
+     * @param productId ID продукта, который нужно удалить
+     * @param token токен администратора
+     * @return перенаправление на страницу со списком продуктов
+     */
+    @PostMapping("/products/delete")
+    public Mono<String> deleteProduct(@RequestParam("productId") UUID productId,
+                                      @RequestParam("token") String token) {
+        logger.info("Отправка запроса на удаление товара с ID: {}", productId);
+
+        return webClient.delete()
+                .uri("/products/delete/{id}", productId) // Передаем только ID продукта в URL
+                .header("Authorization", "Bearer " + token) // Устанавливаем токен
+                .retrieve()
+                .bodyToMono(Void.class)
+                .doOnSuccess(unused -> logger.info("Продукт с ID {} успешно удален.", productId))
+                .thenReturn("redirect:/products/authList-products?token=" + token)
+                .onErrorResume(e -> {
+                    logger.error("Ошибка при удалении товара: {}", e.getMessage(), e);
+                    return Mono.just("redirect:/products?error=failed-to-delete-product");
+                });
+    }
 
     /**
      * Обрабатывает запрос на отображение списка продуктов для авторизованного пользователя.
@@ -238,6 +297,5 @@ public class FrontendProductController {
                 .bodyToMono(Boolean.class)
                 .defaultIfEmpty(false); // Возвращаем false, если роль не найдена или ошибка при получении роли
     }
-
 }
 

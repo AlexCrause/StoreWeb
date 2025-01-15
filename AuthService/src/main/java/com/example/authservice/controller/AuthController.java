@@ -8,6 +8,8 @@ import com.example.authservice.util.JwtUtil;
 import com.example.authservice.exception.InvalidCredentialsException;
 import com.example.authservice.exception.UserNotFoundException;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,20 +19,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
+@Data
 @RestController
 @RequestMapping("/auth")
 @Validated
+@AllArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
-    public AuthController(AuthService authService, JwtUtil jwtUtil) {
-        this.authService = authService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody UserDTO user) {

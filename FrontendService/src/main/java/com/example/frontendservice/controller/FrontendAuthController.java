@@ -1,5 +1,7 @@
 package com.example.frontendservice.controller;
 import com.example.frontendservice.client.userDTO.UserDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

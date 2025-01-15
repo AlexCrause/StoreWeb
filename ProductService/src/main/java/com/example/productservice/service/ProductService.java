@@ -7,6 +7,7 @@ import com.example.productservice.model.Product;
 import com.example.productservice.model.dto.ProductBasicDTO;
 import com.example.productservice.model.dto.ProductDetailedDTO;
 import com.example.productservice.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ProductService {
 
-    @Autowired
     private final ProductRepository productRepository;
 
     /**
@@ -81,6 +81,17 @@ public class ProductService {
         );
     }
 
+    public void deleteProductById(UUID id) throws ProductNotFoundException {
+        // Ищем продукт по ID
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Продукт не найден"));
+
+        // Удаляем продукт
+        productRepository.delete(product);
+    }
+
+
+
 
     // Возвращает базовую информацию о всех продуктах
     public List<ProductBasicDTO> getAllBasicProducts() {
@@ -139,10 +150,7 @@ public class ProductService {
             productRepository.save(product);
         }
     }
-    // Удаляет продукт
-    public void deleteProduct(UUID id) {
-        productRepository.deleteById(id);
-    }
+
 
 
     // Вспомогательный метод для поиска продукта по ID с обработкой ошибки

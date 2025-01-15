@@ -4,6 +4,7 @@ import com.example.authservice.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 import com.example.authservice.model.User;
 import com.example.authservice.repository.UserRepository;
@@ -14,18 +15,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Data
 @Component
 public class JwtUtil {
 
     // Генерация безопасного ключа для HMAC-SHA256
     private final Key secretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
-
     private final UserRepository userRepository;
-
-    // Внедрение зависимостей
-    public JwtUtil(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public String generateToken(String username) {
         // Находим пользователя по имени

@@ -2,9 +2,8 @@
 <html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Редактирование продукта</title>
+    <title>Удаление продукта</title>
     <style>
-        /* Основные стили для страницы */
         body {
             font-family: 'Roboto', Arial, sans-serif;
             background: linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%);
@@ -38,34 +37,10 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        form label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
+        form p {
+            font-size: 16px;
             color: #333;
-        }
-
-        form input,
-        form textarea {
-            width: calc(100% - 28px);
-            padding: 12px 14px;
             margin-bottom: 20px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        form input:focus,
-        form textarea:focus {
-            border-color: #a6c1ee;
-            box-shadow: 0 0 8px rgba(166, 193, 238, 0.5);
-            outline: none;
         }
 
         form button {
@@ -107,23 +82,13 @@
     </style>
 </head>
 <body>
-<h1>Редактировать продукт</h1>
+<h1>Подтверждение удаления продукта</h1>
 
-<form th:action="@{/products/edit(productId=${product.id}, token=${token})}" th:object="${product}" method="post">
-    <label>Название:
-        <input type="text" th:field="*{name}" placeholder="Введите название" required>
-    </label>
-    <label>Описание:
-        <textarea th:field="*{description}" placeholder="Введите описание" required></textarea>
-    </label>
-    <label>Цена:
-        <input type="number" th:field="*{price}" step="0.01" placeholder="Введите цену" required>
-    </label>
-    <label>В наличии:
-        <input type="number" th:field="*{stock}" placeholder="Количество на складе" required>
-    </label>
-    <button type="submit">Сохранить изменения</button>
+<form th:action="@{/products/delete(productId=${product.id}, token=${token})}" method="POST">
+    <p>Вы уверены, что хотите удалить продукт <strong th:text="${product.name}"></strong>?</p>
+    <button type="submit">Удалить</button>
     <a th:href="@{/products/authList-products(token=${token})}">Отмена</a>
 </form>
+
 </body>
 </html>

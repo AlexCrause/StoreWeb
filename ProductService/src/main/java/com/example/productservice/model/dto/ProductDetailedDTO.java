@@ -1,39 +1,35 @@
 package com.example.productservice.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+
 public class ProductDetailedDTO {
 
-    private UUID productId;
+    private UUID id;
     private String name;
     private String description;
     private BigDecimal price;
     private int stock;
 
-
-    // Конструктор
-    public ProductDetailedDTO(UUID productId, String name, String description, BigDecimal price, int stock) {
-        this.productId = productId;
+    public ProductDetailedDTO(UUID id, String name, String description, BigDecimal price, int stock) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
-
     }
 
     public ProductDetailedDTO() {
     }
 
     public UUID getId() {
-        return productId;
+        return id;
     }
 
     public void setId(UUID id) {
-        this.productId = productId;
+        this.id = id;
     }
 
     public String getName() {

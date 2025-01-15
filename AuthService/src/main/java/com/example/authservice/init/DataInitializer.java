@@ -3,19 +3,17 @@ package com.example.authservice.init;
 import com.example.authservice.model.Role;
 import com.example.authservice.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@Data
 @Component
 public class DataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
     private final RoleRepository roleRepository;
 
-    public DataInitializer(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
 
     @PostConstruct
     public void init() {

@@ -1,7 +1,6 @@
 package com.example.frontendservice.client.productDTO;
 
 
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -14,7 +13,6 @@ public class ProductDetailedDTO {
     private BigDecimal price;
     private int stock;
 
-    // Конструктор
     public ProductDetailedDTO(UUID id, String name, String description, BigDecimal price, int stock) {
         this.id = id;
         this.name = name;
@@ -25,7 +23,6 @@ public class ProductDetailedDTO {
 
     public ProductDetailedDTO() {
     }
-
 
     public UUID getId() {
         return id;

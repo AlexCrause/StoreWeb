@@ -90,6 +90,20 @@
         form button:active {
             transform: scale(0.98);
         }
+
+        form a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #a6c1ee;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        form a:hover {
+            color: #fbc2eb;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +123,7 @@
         <input type="number" th:field="*{stock}" placeholder="Количество на складе" required>
     </label>
     <button type="submit">Добавить</button>
+    <a th:href="@{/products/authList-products(token=${token})}">Отмена</a>
 </form>
 </body>
 </html>
