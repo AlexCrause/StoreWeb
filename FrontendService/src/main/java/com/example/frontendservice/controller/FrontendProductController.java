@@ -2,19 +2,25 @@ package com.example.frontendservice.controller;
 
 import com.example.frontendservice.client.productDTO.ProductBasicDTO;
 import com.example.frontendservice.client.productDTO.ProductDetailedDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.WebSession;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -297,5 +303,85 @@ public class FrontendProductController {
                 .bodyToMono(Boolean.class)
                 .defaultIfEmpty(false); // Возвращаем false, если роль не найдена или ошибка при получении роли
     }
+
+
+    /**
+     * Фильтрует список продуктов на основе заданных параметров: название, минимальная цена и максимальная цена.
+     * При этом проверяется наличие токена авторизации пользователя.
+     * Если токен отсутствует или некорректен, пользователь перенаправляется на страницу входа.
+     *
+     * @param name       Название продукта, по которому будет выполнен поиск.
+     * @param minPrice   Минимальная цена для фильтрации.
+     * @param maxPrice   Максимальная цена для фильтрации.
+     * @param token      Токен авторизации, который используется для проверки прав доступа пользователя.
+     * @param model      Модель, в которую добавляются атрибуты для отображения на странице.
+     * @return           Возвращает представление страницы с отфильтрованными продуктами или страницу ошибки.
+     */
+    @GetMapping("/products/filter")
+    public Mono<String> filterProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam String token,
+            Model model) {
+
+        // Добавление в модель токена и информации о том, является ли пользователь администратором
+        model.addAttribute("token", token);
+        model.addAttribute("isAdmin", isAdmin(token));
+
+        logger.info("Запрос фильтрации продуктов с параметрами - название: {}, мин. цена: {}, макс. цена: {}",
+                name, minPrice, maxPrice);
+
+        // Проверка на наличие токена
+        if (token.isEmpty()) {
+            model.addAttribute("errorMessage", "Пожалуйста, войдите в систему для фильтрации продуктов.");
+            return Mono.just("products/login"); // Перенаправляем на страницу входа
+        }
+
+        // Проверка диапазона цен
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            model.addAttribute("errorMessage", "Минимальная цена не может быть больше максимальной.");
+            return Mono.just("products/authList-products");
+        }
+
+        // Создаем URI с параметрами запроса для фильтрации продуктов
+        String uri = UriComponentsBuilder.fromPath("/products/filter")
+                .queryParamIfPresent("name", Optional.ofNullable(name))
+                .queryParamIfPresent("minPrice", Optional.ofNullable(minPrice))
+                .queryParamIfPresent("maxPrice", Optional.ofNullable(maxPrice))
+                .toUriString();
+
+        // Выполняем запрос к серверу для получения отфильтрованных продуктов
+        return webClient.get()
+                .uri(uri)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ProductDetailedDTO>>() {})
+                .doOnNext(products -> {
+                    // Добавляем полученные продукты в модель
+                    logger.info("Получено {} продуктов после фильтрации.", products.size());
+                    model.addAttribute("products", products);
+                    model.addAttribute("isUserAuthenticated", true); // Устанавливаем флаг авторизованного пользователя
+                })
+                .thenReturn("products/authList-products") // Возвращаем представление страницы с продуктами
+                .onErrorResume(e -> {
+                    // Обработка ошибок, если фильтрация не удалась
+                    logger.error("Ошибка при фильтрации продуктов: {}", e.getMessage(), e);
+                    model.addAttribute("errorMessage", "Не удалось загрузить продукты: " + e.getMessage());
+                    model.addAttribute("isUserAuthenticated", true); // Устанавливаем флаг авторизованного пользователя
+                    return Mono.just("products/authList-products");
+                });
+    }
+
+
+
+
+
+
+
+
+
+
+
 }
 

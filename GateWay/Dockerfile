@@ -21,10 +21,10 @@
 #WORKDIR /app
 #
 ## Копируем артефакт из предыдущего этапа
-#COPY --from=builder /app/target/productservice.jar /app/productservice.jar
+#COPY --from=builder /app/target/gateway.jar /app/gateway.jar
 #
 ## Открываем порт, на котором будет работать приложение
-#EXPOSE 8082
+#EXPOSE 8085
 #
 ## Команда для запуска приложения
-#ENTRYPOINT ["java", "-jar", "productservice.jar"]
+#ENTRYPOINT ["java", "-jar", "gateway.jar"]

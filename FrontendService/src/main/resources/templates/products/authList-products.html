@@ -15,7 +15,7 @@
             color: #fff; /* Цвет текста */
             text-decoration: none; /* Убирает подчеркивание */
             border-radius: 5px; /* Скругленные углы */
-/*            z-index: 1000; *//* Обеспечивает, чтобы кнопка была поверх других элементов */
+            /*            z-index: 1000; *//* Обеспечивает, чтобы кнопка была поверх других элементов */
         }
 
         /* Стиль при наведении на кнопку "Выйти" */
@@ -58,37 +58,67 @@
         .edit-product-button:hover {
             background-color: #FF8C00; /* Цвет фона при наведении */
         }
+        /* Стили для формы фильтрации */
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .filter-form input {
+            padding: 5px;
+            margin-right: 10px;
+            width: 100px;
+        }
+        .filter-form button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        /* Стиль для кнопки "Сбросить" */
+        .filter-form a {
+            display: inline-block; /* Делает ссылку выглядеть как кнопку */
+            padding: 5px 10px; /* Отступы внутри кнопки */
+            background-color: #808080; /* Серый цвет фона */
+            color: white; /* Белый цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+            margin-left: 10px; /* Отступ слева */
+        }
+
+        /* Стиль при наведении на кнопку "Сбросить" */
+        .filter-form a:hover {
+            background-color: #696969; /* Более темный серый при наведении */
+        }
+
     </style>
-<!--    <script>-->
-<!--        function deleteProduct(productId, token) {-->
-<!--            if (confirm('Вы уверены, что хотите удалить этот продукт?')) {-->
-<!--                fetch(`/products/delete?productId=${productId}`, {-->
-<!--                    method: 'DELETE',-->
-<!--                    headers: {-->
-<!--                        'Authorization': `Bearer ${token}`-->
-<!--                    }-->
-<!--                })-->
-<!--                    .then(response => {-->
-<!--                    if (response.ok) {-->
-<!--                        alert('Продукт успешно удалён!');-->
-<!--                        window.location.reload();-->
-<!--                    } else {-->
-<!--                        alert('Ошибка при удалении продукта.');-->
-<!--                    }-->
-<!--                })-->
-<!--                    .catch(error => {-->
-<!--                    console.error('Ошибка:', error);-->
-<!--                    alert('Ошибка при удалении продукта.');-->
-<!--                });-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
 </head>
 <body>
 <!-- Кнопка "Выйти" -->
 <a th:href="@{/logout(token=${token})}" class="logout-button">Выйти</a>
 
 <h1>Список продуктов</h1>
+
+<!-- Форма фильтрации с проверкой на токен -->
+<form class="filter-form" method="get" th:action="@{/products/filter}" >
+    <input type="hidden" name="token" th:value="${token}" />
+    <label for="name">Название продукта:</label>
+    <input type="text" id="name" name="name" placeholder="Название продукта" th:value="${name}" />
+
+    <label for="minPrice">Минимальная цена:</label>
+    <input type="number" id="minPrice" name="minPrice" step="0.01" placeholder="Минимальная цена"
+           th:value="${minPrice}" />
+
+    <label for="maxPrice">Максимальная цена:</label>
+    <input type="number" id="maxPrice" name="maxPrice" step="0.01" placeholder="Максимальная цена"
+           th:value="${maxPrice}" />
+
+    <button type="submit">Фильтровать</button>
+    <a th:href="@{/products/authList-products(token=${token})}">Сбросить</a>
+</form>
+
 
 <!-- Проверка на пустой список -->
 <div th:if="${products == null || #lists.isEmpty(products)}">

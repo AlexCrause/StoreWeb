@@ -2,6 +2,7 @@ package com.example.productservice.controller;
 
 
 import com.example.productservice.exception.ProductNotFoundException;
+import com.example.productservice.model.dto.filter.ProductFilterDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Контроллер для обработки запросов, связанных с продуктами.
+ * Включает методы для фильтрации, получения, создания, обновления и удаления продуктов.
+ */
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -25,8 +30,43 @@ public class ProductController {
     private final ProductService productService;
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
+    /**
+     * Фильтрует продукты по заданным параметрам: название, минимальная и максимальная цена.
+     *
+     * @param name      Название продукта (необязательный параметр).
+     * @param minPrice  Минимальная цена (необязательный параметр).
+     * @param maxPrice  Максимальная цена (необязательный параметр).
+     * @param token     Токен авторизации пользователя.
+     * @return ResponseEntity с результатами фильтрации продуктов или ошибкой.
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProductDetailedDTO>> filterProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String token) {
+        if (isValidToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-    // Возвращает список продуктов
+        try {
+            ProductFilterDTO filterDTO = new ProductFilterDTO(name, minPrice, maxPrice);
+            List<ProductDetailedDTO> filteredProducts = productService.filterProducts(filterDTO);
+            return ResponseEntity.ok(filteredProducts);
+        } catch (Exception e) {
+            log.error("Ошибка при фильтрации продуктов: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Ответ при ошибке фильтрации
+        }
+    }
+
+    /**
+     * Возвращает список всех продуктов, в зависимости от авторизации пользователя.
+     * Если токен действителен, возвращается полная информация о товарах.
+     * В противном случае — базовая информация.
+     *
+     * @param token Токен авторизации.
+     * @return ResponseEntity с соответствующими данными продуктов.
+     */
     @GetMapping
     public ResponseEntity<List<?>> getAllProducts(
             @RequestHeader(name = "Authorization", required = false) String token) {
@@ -89,6 +129,13 @@ public class ProductController {
         return ResponseEntity.ok(updatedProductDTO);
     }
 
+    /**
+     * Удаляет продукт по его идентификатору.
+     *
+     * @param authorization Токен авторизации.
+     * @param id           Идентификатор продукта.
+     * @return Ответ с результатом удаления.
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct(@RequestHeader("Authorization") String authorization,
                                            @PathVariable UUID id) {
@@ -108,9 +155,13 @@ public class ProductController {
     }
 
 
-
-
-    // Возвращает продукт по ID
+    /**
+     * Возвращает продукт по его идентификатору.
+     *
+     * @param id     Идентификатор продукта.
+     * @param token  Токен авторизации.
+     * @return Информацию о продукте.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(
             @PathVariable UUID id,
@@ -122,6 +173,13 @@ public class ProductController {
     }
 
 
+    /**
+     * Проверяет доступность продукта по его количеству.
+     *
+     * @param productId Идентификатор продукта.
+     * @param quantity  Необходимое количество товара.
+     * @return True, если продукт доступен в достаточном количестве, иначе False.
+     */
     @GetMapping("/{productId}/availability")
     public ResponseEntity<Boolean> checkAvailability(
             @PathVariable UUID productId,
@@ -134,7 +192,12 @@ public class ProductController {
     }
 
 
-    // Получение цены товара
+    /**
+     * Возвращает цену товара по его идентификатору.
+     *
+     * @param id Идентификатор продукта.
+     * @return Цена продукта.
+     */
     @GetMapping("/{id}/price")
     public ResponseEntity<BigDecimal> getPrice(@PathVariable UUID id) {
         ProductDetailedDTO product = productService.getDetailedProductById(id);
@@ -143,14 +206,13 @@ public class ProductController {
     }
 
 
-
-
-
-
-
-
-
-
+    /**
+     * Уменьшает количество товара на складе.
+     *
+     * @param id       Идентификатор продукта.
+     * @param quantity Количество, на которое нужно уменьшить запас.
+     * @return Ответ без содержимого, статус 204 No Content.
+     */
     @PutMapping("/decreaseStock/{id}")
     public ResponseEntity<Void> decreaseStock(@PathVariable UUID id, @RequestParam int quantity) {
         productService.decreaseStock(id, quantity);
