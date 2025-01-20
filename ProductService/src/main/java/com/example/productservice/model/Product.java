@@ -17,7 +17,7 @@ public class Product {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    private UUID id;  // Используем UUID для идентификаторов
+    private UUID id;
 
     @Column(nullable = false)
     private String name;

@@ -10,6 +10,7 @@
         <module>EurekaServer</module>
         <module>ProductService</module>
         <module>OrderService</module>
+        <module>ReviewService</module>
     </modules>
 
     <parent>

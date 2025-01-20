@@ -7,7 +7,7 @@
     <style>
         /* Стиль для кнопки "Выйти" */
         .logout-button {
-            position: fixed; /* Фиксированное положение на экране */
+/*            position: fixed; *//* Фиксированное положение на экране */
             top: 10px; /* Отступ сверху */
             right: 10px; /* Отступ справа */
             padding: 10px 15px; /* Отступы внутри кнопки */
@@ -93,6 +93,61 @@
             background-color: #696969; /* Более темный серый при наведении */
         }
 
+        /* Стили для формы добавления отзывов */
+        .review-form {
+            margin-top: 15px; /* Отступ сверху */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ddd; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            background-color: #f9f9f9; /* Светлый фон */
+            width: 100%; /* Ширина формы */
+        }
+
+        .review-form label {
+            display: block; /* Блочное отображение для меток */
+            margin-bottom: 10px; /* Отступ снизу */
+            font-weight: bold; /* Жирный шрифт */
+        }
+
+        .review-form textarea {
+            width: 100%; /* Ширина текстового поля */
+            height: 80px; /* Высота текстового поля */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ccc; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            resize: vertical; /* Возможность изменения высоты */
+            font-size: 14px; /* Размер шрифта */
+            font-family: Arial, sans-serif; /* Шрифт */
+        }
+
+        .review-form input[type="number"] {
+            width: 100%; /* Ширина числового поля */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ccc; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            margin-top: 10px; /* Отступ сверху */
+            font-size: 14px; /* Размер шрифта */
+        }
+
+        .review-form button {
+            display: block; /* Блочное отображение */
+            width: 100%; /* Ширина кнопки */
+            padding: 10px; /* Внутренние отступы */
+            background-color: #4CAF50; /* Зеленый цвет фона */
+            color: white; /* Белый цвет текста */
+            border: none; /* Без рамки */
+            border-radius: 5px; /* Скругленные углы */
+            font-size: 16px; /* Размер шрифта */
+            font-weight: bold; /* Жирный шрифт */
+            cursor: pointer; /* Указатель при наведении */
+            margin-top: 10px; /* Отступ сверху */
+        }
+
+        .review-form button:hover {
+            background-color: #45a049; /* Более темный зеленый при наведении */
+        }
+
+
     </style>
 </head>
 <body>
@@ -133,7 +188,8 @@
         <th>Цена</th>
         <th>Описание</th>
         <th>В наличии</th>
-        <th th:if="${isUserAuthenticated}">Приобрести</th>
+        <th>Отзывы</th>
+<!--        <th th:if="${isUserAuthenticated}">Приобрести</th>-->
         <th th:if="${isAdmin}">Изменить</th>
         <th th:if="${isAdmin}">Удалить</th>
     </tr>
@@ -145,11 +201,12 @@
         <td th:text="${product.description != null && !product.description.isEmpty() ? product.description : 'Нет описания'}"></td>
         <td th:text="${product.stock != null ? product.stock : '0'}"></td>
 
-        <!-- Для авторизованного пользователя -->
-        <td th:if="${isUserAuthenticated}">
-            <a th:href="@{/products/addToCart(productId=${product.id}, token=${token})}"
-               class="add-to-cart-button">Добавить в корзину</a>
+        <!-- Кнопка для перехода на форму добавления отзыва -->
+        <td>
+            <a th:href="@{/frontend/addForm(productId=${product.id}, token=${token})}"
+               class="add-to-cart-button">Просмотреть отзывы</a>
         </td>
+
 
         <td th:if="${isAdmin}">
             <a th:href="@{/products/edit(productId=${product.id}, token=${token})}"

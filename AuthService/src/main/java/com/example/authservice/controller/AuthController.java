@@ -3,6 +3,7 @@ package com.example.authservice.controller;
 import com.example.authservice.model.Role;
 import com.example.authservice.model.dto.UserDTO;
 import com.example.authservice.model.User;
+import com.example.authservice.model.dto.UserInfoDTO;
 import com.example.authservice.service.AuthService;
 import com.example.authservice.util.JwtUtil;
 import com.example.authservice.exception.InvalidCredentialsException;

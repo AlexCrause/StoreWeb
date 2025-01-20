@@ -33,8 +33,20 @@ services:
     volumes:
       - order_db_data:/var/lib/postgresql/data
 
+  review-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: reviewservice-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5435:5432"
+    volumes:
+      - review_db_data:/var/lib/postgresql/data
+
 
 volumes:
   auth_db_data:
   product_db_data:
   order_db_data:
+  review_db_data:
