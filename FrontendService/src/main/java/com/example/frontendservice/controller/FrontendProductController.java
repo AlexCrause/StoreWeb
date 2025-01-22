@@ -281,7 +281,7 @@ public class FrontendProductController {
                     model.addAttribute("errorMessage", "Не удалось загрузить продукты.");
                     model.addAttribute("isUserAuthenticated", true);
                     model.addAttribute("token", token);
-                    return Mono.just("products/error");
+                    return Mono.just("store");
                 });
     }
 

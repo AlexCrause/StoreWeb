@@ -1,91 +1,55 @@
 package com.example.OrderService.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Data
 @Entity
+@Table(name = "order_item")
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id; // Уникальный идентификатор строки заказа
+    private UUID id;
 
     @Column(nullable = false)
-    private UUID productId; // Идентификатор продукта, связанный с ProductService
+    private UUID productId;
 
-    //@Column(nullable = false)
-    private String name; // Название продукта для удобства отображения
-
-    @Column(nullable = false)
-    private Integer quantity; // Количество
+    @Column
+    private String name;
 
     @Column(nullable = false)
-    private BigDecimal price; // Цена за единицу (изменено на BigDecimal)
+    private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Order order; // Связь с заказом
+    private Order order;
 
-    // Вычисляемое поле для общей стоимости
     @Transient
     public BigDecimal getTotalPrice() {
-        return price.multiply(BigDecimal.valueOf(quantity)); // Умножаем BigDecimal
-    }
-
-    // Геттеры и сеттеры
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
+        if (price == null || quantity == null) {
+            return BigDecimal.ZERO;
+        }
+        return price.multiply(BigDecimal.valueOf(quantity));
     }
 
     public void setQuantity(Integer quantity) {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
+        if (quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be null or negative");
         }
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
     public void setPrice(BigDecimal price) {
-        if (price.compareTo(BigDecimal.ZERO) < 0) { // Проверка на отрицательную цену
-            throw new IllegalArgumentException("Price cannot be negative");
+        if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Price cannot be null or negative");
         }
         this.price = price;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
     }
 }

@@ -16,7 +16,8 @@ server:
   port: 8083
 logging:
   level:
-    root: INFO
+#    root: INFO
+    root: DEBUG
 eureka:
   client:
     registry-fetch-interval-seconds: 5
@@ -24,6 +25,5 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
-gateway:
-  url: http://localhost:8765  # URL для Gateway
+
 

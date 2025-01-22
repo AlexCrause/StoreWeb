@@ -154,6 +154,7 @@
 <!-- Кнопка "Выйти" -->
 <a th:href="@{/logout(token=${token})}" class="logout-button">Выйти</a>
 
+
 <h1>Список продуктов</h1>
 
 <!-- Форма фильтрации с проверкой на токен -->
@@ -189,7 +190,7 @@
         <th>Описание</th>
         <th>В наличии</th>
         <th>Отзывы</th>
-<!--        <th th:if="${isUserAuthenticated}">Приобрести</th>-->
+        <th th:if="${isUserAuthenticated}">Корзина</th>
         <th th:if="${isAdmin}">Изменить</th>
         <th th:if="${isAdmin}">Удалить</th>
     </tr>
@@ -205,6 +206,11 @@
         <td>
             <a th:href="@{/frontend/addForm(productId=${product.id}, token=${token})}"
                class="add-to-cart-button">Просмотреть отзывы</a>
+        </td>
+
+        <td>
+            <a th:href="@{/frontend/viewCart(productId=${product.id}, token=${token})}"
+               class="add-to-cart-button">Добавить в корзину</a>
         </td>
 
 

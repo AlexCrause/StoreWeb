@@ -21,10 +21,6 @@ public class ReviewController {
     private final ReviewService reviewService;
     private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
 
-//    @PostMapping
-//    public ResponseEntity<ReviewResponseDTO> createReview(@RequestBody ReviewCreateDTO reviewDTO) {
-//        return ResponseEntity.ok(reviewService.createReview(reviewDTO));
-//    }
 
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> createReview(@RequestBody ReviewCreateDTO reviewDTO) {

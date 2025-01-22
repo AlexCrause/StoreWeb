@@ -1,22 +1,24 @@
 package com.example.frontendservice.controller;
 
-import com.example.frontendservice.client.orderDTO.OrderDTO;
-import com.example.frontendservice.client.orderDTO.OrderItemRequestDTO;
-import com.example.frontendservice.client.orderDTO.OrderRequestDTO;
+import com.example.frontendservice.client.orderDTO.CartDTO;
+import com.example.frontendservice.client.orderDTO.CartItemDTO;
+import com.example.frontendservice.client.productDTO.ProductDetailedDTO;
+import com.example.frontendservice.client.reviewDTO.ReviewCreateDTO;
+import com.example.frontendservice.client.reviewDTO.ReviewResponseDTO;
+import com.example.frontendservice.client.userDTO.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @Controller
+@RequestMapping("/frontend")
 public class FrontendOrderController {
 
     @Value("${gateway.url}")
@@ -25,100 +27,80 @@ public class FrontendOrderController {
     private final WebClient webClient;
     private static final Logger logger = LoggerFactory.getLogger(FrontendOrderController.class);
 
-    public FrontendOrderController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(gatewayUrl).build();
+    /**
+     * Конструктор для инициализации WebClient с использованием URL шлюза.
+     *
+     * @param gatewayUrl Базовый URL шлюза.
+     */
+    public FrontendOrderController(@Value("${gateway.url}") String gatewayUrl) {
+        this.webClient = WebClient.builder()
+                .baseUrl(gatewayUrl)
+                .build();
     }
 
-    @GetMapping("/products/addToCart")
-    public String addToCart(
+
+    @GetMapping("/viewCart")
+    public Mono<String> viewCart(@RequestParam UUID productId,
+                                 @RequestParam String token,
+                                 Model model) {
+        return webClient.get()
+                .uri("/products/" + productId) // Получение данных о продукте
+                .headers(headers -> headers.set("Authorization", "Bearer " + token))
+                .retrieve()
+                .bodyToMono(ProductDetailedDTO.class)
+                .flatMap(product -> {
+                    model.addAttribute("product", product); // Добавление данных о продукте в модель
+                    model.addAttribute("productId", productId); // Добавление productId в модель
+                    model.addAttribute("token", token); // Добавление токена в модель
+                    return webClient.get()
+                            .uri("/orders/product/{productId}", productId)
+                            .headers(headers -> headers.set("Authorization", "Bearer " + token))
+                            .retrieve()
+                            .bodyToMono(CartDTO.class);
+                })
+                .flatMap(cart -> {
+                    model.addAttribute("cart", cart);
+                    return Mono.just("products/cart");
+                })
+
+                .onErrorResume(ex -> {
+                    logger.error("Ошибка при загрузке данных: {}", ex.getMessage(), ex);
+                    model.addAttribute("errorMessage", "Не удалось загрузить данные: " + ex.getMessage());
+                    return Mono.just("products/error"); // Возврат представления с ошибкой в случае неудачи
+                });
+    }
+
+
+    @PostMapping("/addToCart")
+    public Mono<String> createOrder(
+            @ModelAttribute CartItemDTO cartItemDTO,
             @RequestParam("productId") UUID productId,
-            @RequestParam("token") String token,
-            Model model) {
+            @RequestParam("token") String token) {
 
-        logger.info("Получен productId: {}", productId);
+        cartItemDTO.setProductId(productId);
 
-        if (productId == null) {
-            logger.error("Ошибка: productId не может быть null");
-            model.addAttribute("errorMessage", "Неверный productId");
-            return "products/error";
-        }
-
-        String checkOrderUrl = "/orders/checkOrderExistence";
-
-        Boolean orderExists = webClient.get()
-                .uri(checkOrderUrl)
-                .header("Authorization", token)
+        return webClient
+                .get()
+                .uri("/auth/user-info") // Получение информации о пользователе
+                .header("Authorization", "Bearer " + token)
                 .retrieve()
-                .bodyToMono(Boolean.class)
-                .block();
+                .bodyToMono(UserDTO.class)
+                .flatMap(userInfo -> {
 
-        if (Boolean.TRUE.equals(orderExists)) {
-            // Если заказ существует, добавляем товар в заказ
-            OrderItemRequestDTO orderItem = new OrderItemRequestDTO(productId, 1);
-            return addItemToExistingOrder(token, orderItem, model);
-        } else {
-            // Если заказа нет, создаем новый и добавляем товар
-            return createNewOrderWithItem(token, productId, model);
-        }
-    }
+                    cartItemDTO.setCustomer(userInfo.getUsername());
+                    cartItemDTO.setCustomerId(userInfo.getId());
 
-    private String addItemToExistingOrder(String token, OrderItemRequestDTO orderItemRequest, Model model) {
-        OrderRequestDTO orderRequest = new OrderRequestDTO(token, List.of(orderItemRequest));
-        String addItemUrl = "/orders/addItem";
-
-        OrderDTO order = webClient.post()
-                .uri(addItemUrl)
-                .header("Authorization", token)
-                .bodyValue(orderRequest)
-                .retrieve()
-                .bodyToMono(OrderDTO.class)
-                .block();
-
-        model.addAttribute("order", order);
-        model.addAttribute("successMessage", "Product added to order successfully!");
-
-        return "products/authList-products";
-    }
-
-    private String createNewOrderWithItem(String token, UUID productId, Model model) {
-        if (token == null || token.isBlank()) {
-            throw new IllegalArgumentException("Authorization token cannot be null or blank");
-        }
-
-        if (productId == null) {
-            throw new IllegalArgumentException("Product ID cannot be null");
-        }
-
-        OrderItemRequestDTO orderItemRequest = new OrderItemRequestDTO(productId, 1);
-        OrderRequestDTO orderRequest = new OrderRequestDTO(token, List.of(orderItemRequest));
-        String createOrderUrl = "/orders/createOrder";
-
-        OrderDTO order = webClient.post()
-                .uri(createOrderUrl)
-                .header("Authorization", token)
-                .bodyValue(orderRequest)
-                .retrieve()
-                .bodyToMono(OrderDTO.class)
-                .block();
-
-        model.addAttribute("order", order);
-        model.addAttribute("successMessage", "New order created and product added!");
-
-        return "products/authList-products";
-    }
-
-    @GetMapping("/cart/current")
-    public String getCurrentOrder(@RequestParam("token") String token, Model model) {
-        String currentOrderUrl = "/orders/current";
-
-        OrderDTO order = webClient.get()
-                .uri(currentOrderUrl)
-                .header("Authorization", token)
-                .retrieve()
-                .bodyToMono(OrderDTO.class)
-                .block();
-
-        model.addAttribute("order", order);
-        return "cart/cart";
+                    return webClient
+                            .post()
+                            .uri("/orders/create-order")
+                            .bodyValue(cartItemDTO)
+                            .retrieve()
+                            .bodyToMono(CartDTO.class)
+                            .thenReturn("redirect:/frontend/viewCart?productId=" + productId + "&token=" + token); // Перенаправление обратно на форму
+                })
+                .onErrorResume(ex -> {
+                    logger.error("Ошибка при добавлении товара: {}", ex.getMessage(), ex);
+                    return Mono.error(new RuntimeException("Не удалось добавить товар: " + ex.getMessage()));
+                });
     }
 }

@@ -1,68 +1,49 @@
 package com.example.OrderService.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 @Entity
-@Table(name = "orders")  // Переименована таблица для избежания конфликта с зарезервированным словом
+@Table(name = "orders")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)  // Обеспечиваем, чтобы идентификатор пользователя был обязательным
+    @Column(nullable = false)
     private UUID userId;
 
-    //@Column(nullable = false)
+    @Column(nullable = true) // Поле productId больше не обязательно, так как оно связано с OrderItem
+    private UUID productId;
+
+    @Column(nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id")  // Связь с OrderItem через внешний ключ
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(nullable = false)  // Обеспечиваем, чтобы статус был обязательным
-    private String status;  // Новый статус заказа
+    @Column(nullable = false)
+    private String status;
 
-    public String getName() {
-        return name;
-    }
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
 
     public void setOrderItems(List<OrderItem> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            throw new IllegalArgumentException("Order must have at least one item.");
+        }
         this.orderItems = orderItems;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

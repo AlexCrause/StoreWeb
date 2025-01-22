@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
     ports:
-      - "5432:5432"  # Маппинг порта 5432 контейнера на 5432 хоста
+      - "5432:5432"
     volumes:
       - auth_db_data:/var/lib/postgresql/data
 
@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
     ports:
-      - "5433:5432"  # Маппинг порта 5432 контейнера на 5433 хоста
+      - "5433:5432"
     volumes:
       - product_db_data:/var/lib/postgresql/data
 

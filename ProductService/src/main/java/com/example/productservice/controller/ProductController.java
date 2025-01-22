@@ -173,23 +173,23 @@ public class ProductController {
     }
 
 
-    /**
-     * Проверяет доступность продукта по его количеству.
-     *
-     * @param productId Идентификатор продукта.
-     * @param quantity  Необходимое количество товара.
-     * @return True, если продукт доступен в достаточном количестве, иначе False.
-     */
-    @GetMapping("/{productId}/availability")
-    public ResponseEntity<Boolean> checkAvailability(
-            @PathVariable UUID productId,
-            @RequestParam Integer quantity) {
-        log.info("Получен запрос на проверку доступности товара с ID: {} и количеством: {}", productId, quantity);
-        ProductDetailedDTO product = productService.getDetailedProductById(productId);
-        boolean isAvailable = product.getStock() >= quantity;
-        log.info("Доступность товара: {}", isAvailable);
-        return ResponseEntity.ok(isAvailable);
-    }
+//    /**
+//     * Проверяет доступность продукта по его количеству.
+//     *
+//     * @param productId Идентификатор продукта.
+//     * @param quantity  Необходимое количество товара.
+//     * @return True, если продукт доступен в достаточном количестве, иначе False.
+//     */
+//    @GetMapping("/{productId}/availability")
+//    public ResponseEntity<Boolean> checkAvailability(
+//            @PathVariable UUID productId,
+//            @RequestParam Integer quantity) {
+//        log.info("Получен запрос на проверку доступности товара с ID: {} и количеством: {}", productId, quantity);
+//        ProductDetailedDTO product = productService.getDetailedProductById(productId);
+//        boolean isAvailable = product.getStock() >= quantity;
+//        log.info("Доступность товара: {}", isAvailable);
+//        return ResponseEntity.ok(isAvailable);
+//    }
 
 
     /**
