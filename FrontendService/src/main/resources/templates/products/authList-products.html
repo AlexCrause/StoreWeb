@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Список продуктов</title>
+    <link rel="stylesheet" href="/productsCss/product-listCss.css">
+    <style>
+        /* Стиль для кнопки "Выйти" */
+        .logout-button {
+/*            position: fixed; *//* Фиксированное положение на экране */
+            top: 10px; /* Отступ сверху */
+            right: 10px; /* Отступ справа */
+            padding: 10px 15px; /* Отступы внутри кнопки */
+            background-color: #FF6347; /* Цвет фона */
+            color: #fff; /* Цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+            /*            z-index: 1000; *//* Обеспечивает, чтобы кнопка была поверх других элементов */
+        }
+
+        /* Стиль при наведении на кнопку "Выйти" */
+        .logout-button:hover {
+            background-color: #FF4500; /* Цвет фона при наведении */
+        }
+
+        /* Общие стили для кнопок (добавление в корзину, удаление, изменение, добавление продукта) */
+        .add-to-cart-button, .delete-product-button, .add-product-button, .edit-product-button {
+            display: inline-block; /* Блоки на одной линии */
+            padding: 5px 10px; /* Отступы внутри кнопок */
+            background-color: #4CAF50; /* Основной цвет фона */
+            color: white; /* Цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+            margin: 5px; /* Отступы между кнопками */
+        }
+
+        /* Стиль для кнопки удаления продукта */
+        .delete-product-button {
+            background-color: #FF6347; /* Красный цвет фона */
+        }
+
+        /* Стиль при наведении на кнопку удаления продукта */
+        .delete-product-button:hover {
+            background-color: #FF4500; /* Цвет фона при наведении */
+        }
+
+        /* Стиль при наведении на кнопку добавления в корзину */
+        .add-to-cart-button:hover {
+            background-color: #45a049; /* Цвет фона при наведении */
+        }
+
+        /* Стиль для кнопки изменения продукта */
+        .edit-product-button {
+            background-color: #FFA500; /* Оранжевый цвет фона */
+        }
+
+        /* Стиль при наведении на кнопку изменения продукта */
+        .edit-product-button:hover {
+            background-color: #FF8C00; /* Цвет фона при наведении */
+        }
+        /* Стили для формы фильтрации */
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .filter-form input {
+            padding: 5px;
+            margin-right: 10px;
+            width: 100px;
+        }
+        .filter-form button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        /* Стиль для кнопки "Сбросить" */
+        .filter-form a {
+            display: inline-block; /* Делает ссылку выглядеть как кнопку */
+            padding: 5px 10px; /* Отступы внутри кнопки */
+            background-color: #808080; /* Серый цвет фона */
+            color: white; /* Белый цвет текста */
+            text-decoration: none; /* Убирает подчеркивание */
+            border-radius: 5px; /* Скругленные углы */
+            margin-left: 10px; /* Отступ слева */
+        }
+
+        /* Стиль при наведении на кнопку "Сбросить" */
+        .filter-form a:hover {
+            background-color: #696969; /* Более темный серый при наведении */
+        }
+
+        /* Стили для формы добавления отзывов */
+        .review-form {
+            margin-top: 15px; /* Отступ сверху */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ddd; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            background-color: #f9f9f9; /* Светлый фон */
+            width: 100%; /* Ширина формы */
+        }
+
+        .review-form label {
+            display: block; /* Блочное отображение для меток */
+            margin-bottom: 10px; /* Отступ снизу */
+            font-weight: bold; /* Жирный шрифт */
+        }
+
+        .review-form textarea {
+            width: 100%; /* Ширина текстового поля */
+            height: 80px; /* Высота текстового поля */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ccc; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            resize: vertical; /* Возможность изменения высоты */
+            font-size: 14px; /* Размер шрифта */
+            font-family: Arial, sans-serif; /* Шрифт */
+        }
+
+        .review-form input[type="number"] {
+            width: 100%; /* Ширина числового поля */
+            padding: 10px; /* Внутренние отступы */
+            border: 1px solid #ccc; /* Серый бордюр */
+            border-radius: 5px; /* Скругленные углы */
+            margin-top: 10px; /* Отступ сверху */
+            font-size: 14px; /* Размер шрифта */
+        }
+
+        .review-form button {
+            display: block; /* Блочное отображение */
+            width: 100%; /* Ширина кнопки */
+            padding: 10px; /* Внутренние отступы */
+            background-color: #4CAF50; /* Зеленый цвет фона */
+            color: white; /* Белый цвет текста */
+            border: none; /* Без рамки */
+            border-radius: 5px; /* Скругленные углы */
+            font-size: 16px; /* Размер шрифта */
+            font-weight: bold; /* Жирный шрифт */
+            cursor: pointer; /* Указатель при наведении */
+            margin-top: 10px; /* Отступ сверху */
+        }
+
+        .review-form button:hover {
+            background-color: #45a049; /* Более темный зеленый при наведении */
+        }
+
+
+    </style>
+</head>
+<body>
+<!-- Кнопка "Выйти" -->
+<a th:href="@{/logout(token=${token})}" class="logout-button">Выйти</a>
+
+
+<h1>Список продуктов</h1>
+
+<!-- Форма фильтрации с проверкой на токен -->
+<form class="filter-form" method="get" th:action="@{/products/filter}" >
+    <input type="hidden" name="token" th:value="${token}" />
+    <label for="name">Название продукта:</label>
+    <input type="text" id="name" name="name" placeholder="Название продукта" th:value="${name}" />
+
+    <label for="minPrice">Минимальная цена:</label>
+    <input type="number" id="minPrice" name="minPrice" step="0.01" placeholder="Минимальная цена"
+           th:value="${minPrice}" />
+
+    <label for="maxPrice">Максимальная цена:</label>
+    <input type="number" id="maxPrice" name="maxPrice" step="0.01" placeholder="Максимальная цена"
+           th:value="${maxPrice}" />
+
+    <button type="submit">Фильтровать</button>
+    <a th:href="@{/products/authList-products(token=${token})}">Сбросить</a>
+</form>
+
+
+<!-- Проверка на пустой список -->
+<div th:if="${products == null || #lists.isEmpty(products)}">
+    <p>Продукты отсутствуют.</p>
+</div>
+
+<!-- Таблица продуктов -->
+<table th:if="${products != null && !#lists.isEmpty(products)}">
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Описание</th>
+        <th>В наличии</th>
+        <th>Отзывы</th>
+        <th th:if="${isUserAuthenticated}">Корзина</th>
+        <th th:if="${isAdmin}">Изменить</th>
+        <th th:if="${isAdmin}">Удалить</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.price}"></td>
+        <td th:text="${product.description != null && !product.description.isEmpty() ? product.description : 'Нет описания'}"></td>
+        <td th:text="${product.stock != null ? product.stock : '0'}"></td>
+
+        <!-- Кнопка для перехода на форму добавления отзыва -->
+        <td>
+            <a th:href="@{/frontend/addForm(productId=${product.id}, token=${token})}"
+               class="add-to-cart-button">Просмотреть отзывы</a>
+        </td>
+
+        <td>
+            <a th:href="@{/frontend/viewCart(productId=${product.id}, token=${token})}"
+               class="add-to-cart-button">Добавить в корзину</a>
+        </td>
+
+
+        <td th:if="${isAdmin}">
+            <a th:href="@{/products/edit(productId=${product.id}, token=${token})}"
+               class="edit-product-button">Изменить</a>
+        </td>
+
+
+        <td th:if="${isAdmin}">
+            <a th:href="@{/products/delete(productId=${product.id}, token=${token})}"
+               class="delete-product-button">Удалить</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Ссылка для добавления нового товара, только если пользователь администратор -->
+<a th:if="${isAdmin}" th:href="@{/products/add(token=${token})}" class="add-product-button">Добавить новый продукт</a>
+
+</body>
+</html>

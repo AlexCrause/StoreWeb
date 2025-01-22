@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/users/registerCss.css">
+</head>
+<body>
+<div class="container">
+    <h1>Регистрация</h1>
+    <form action="/auth/register/user" method="post"> <!-- Добавлен слэш перед путем -->
+        <div>
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div>
+            <button type="submit">Зарегистрироваться</button>
+        </div>
+    </form>
+    <div>
+        <p>Есть аккаунт? <a href="/auth/login" methods="post">Войти</a></p>
+    </div>
+    <div>
+        <!-- Отображение ошибки, если она есть -->
+        <p th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+server:
+  port: 8085
+  error:
+    include-message: always
+    include-binding-errors: always
+
+
+spring:
+  web:
+    resources:
+      static-locations: classpath:/static/
+  application:
+    name: FrontendService
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+logging:
+  level:
+    root: INFO
+#    root: DEBUG
+
+
+
+
+
+
+
+
+gateway:
+  url: http://localhost:8765  # URL для Gateway

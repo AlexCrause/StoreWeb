@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/users/dashboardCSS.css">
+    <title>Панель управления</title>
+</head>
+<body>
+<h1>Добро пожаловать, <span th:text="${user}"></span>!</h1>
+<p>Ваш токен: <span th:text="${token}"></span></p>
+
+<!-- Ссылка на список продуктов -->
+<a th:href="@{/products/authList-products(token=${token})}">Перейти к списку продуктов</a>
+</body>
+</html>

@@ -1,0 +1,98 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+/*    cursor: pointer;*/
+}
+
+button:hover {
+    background-color: #c9302c;
+}
+
+
+/* Общие стили для кнопок */
+.add-to-cart-button, .delete-product-button, .add-product-button {
+    display: inline-block;
+    padding: 5px 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+/* Стили для кнопки "Добавить в корзину" */
+.add-to-cart-button {
+    background-color: #4CAF50; /* Зеленый */
+    transition: background-color 0.3s ease;
+}
+
+.add-to-cart-button:hover {
+    background-color: #45a049; /* Темный зеленый при наведении */
+}
+
+.add-to-cart-button:active {
+    background-color: #3e8e41; /* Еще более темный при клике */
+}
+
+/* Стили для кнопки "Удалить продукт" */
+.delete-product-button {
+    background-color: #FF6347; /* Красный */
+}
+
+.delete-product-button:hover {
+    background-color: #FF4500; /* Темно-красный при наведении */
+}
+
+/* Стили для кнопки "Добавить новый продукт" */
+.add-product-button {
+    background-color: #4CAF50; /* Зеленый */
+}
+
+.add-product-button:hover {
+    background-color: #45a049; /* Темный зеленый при наведении */
+}
+
+
+

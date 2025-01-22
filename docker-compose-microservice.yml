@@ -1,0 +1,165 @@
+##version: '3.9'
+#services:
+#  # AuthService и его база данных
+#  auth-db:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: authservice-db
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: secret
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - auth_db_data:/var/lib/postgresql/data
+#
+#  auth-service:
+#    build:
+#      context: ./AuthService
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      SPRING_APPLICATION_NAME: AuthService
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/authservice-db
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: secret
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+#      SPRING_JPA_SHOW_SQL: "true"
+#      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+#      SERVER_PORT: 8081
+#      ADMIN_USERNAME: admin
+#      ADMIN_PASSWORD: pass
+#    depends_on:
+#      - auth-db
+#      - eureka-server
+#    networks:
+#      - store-network
+#
+#  # Eureka Server
+#  eureka-server:
+#    build:
+#      context: ./EurekaServer
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      EUREKA_SERVER_DEFAULTZONE: http://eureka-server:8761/eureka
+#      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+#      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+#    networks:
+#      - store-network
+#
+#  # ProductService и его база данных
+#  product-db:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: productservice-db
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: secret
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - product_db_data:/var/lib/postgresql/data
+#
+#  product-service:
+#    build:
+#      context: ./ProductService
+#    ports:
+#      - "8082:8082"
+#    environment:
+#      SPRING_APPLICATION_NAME: ProductService
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/productservice-db
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: secret
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+#      SPRING_JPA_SHOW_SQL: "true"
+#      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+#      SERVER_PORT: 8082
+#    depends_on:
+#      - product-db
+#      - eureka-server
+#    networks:
+#      - store-network
+#
+#  # OrderService и его база данных
+#  order-db:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: orderservice-db
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: secret
+#    ports:
+#      - "5434:5432"
+#    volumes:
+#      - order_db_data:/var/lib/postgresql/data
+#
+#  order-service:
+#    build:
+#      context: ./OrderService
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      SPRING_APPLICATION_NAME: OrderService
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/orderservice-db
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: secret
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+#      SPRING_JPA_SHOW_SQL: "true"
+#      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+#      SERVER_PORT: 8083
+#    depends_on:
+#      - order-db
+#      - eureka-server
+#    networks:
+#      - store-network
+#
+#  # FrontendService
+#  frontend-service:
+#    build:
+#      context: ./FrontendService
+#    ports:
+#      - "8085:8085"
+#    environment:
+#      SPRING_APPLICATION_NAME: FrontendService
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+#      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+#      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+#      GATEWAY_URL: http://gateway:8765
+#    depends_on:
+#      - eureka-server
+#      - gateway
+#    networks:
+#      - store-network
+#
+#  # Gateway
+#  gateway:
+#    build:
+#      context: ./Gateway
+#    ports:
+#      - "8765:8765"
+#    environment:
+#      SPRING_APPLICATION_NAME: Gateway
+#      SPRING_CLOUD_GATEWAY_ROUTES: "AuthService,ProductService,OrderService"
+#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+#      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "true"
+#      EUREKA_CLIENT_FETCH_REGISTRY: "true"
+#    depends_on:
+#      - eureka-server
+#      - auth-service
+#      - product-service
+#      - order-service
+#    networks:
+#      - store-network
+#
+#networks:
+#  store-network:
+#    driver: bridge
+#
+#volumes:
+#  auth_db_data:
+#  product_db_data:
+#  order_db_data:

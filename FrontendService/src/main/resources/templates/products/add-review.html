@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить отзыв</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        .product-info {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .product-info h3 {
+            color: #343a40;
+        }
+        .product-info p {
+            color: #6c757d;
+            margin: 5px 0;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+        textarea, select, button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        hr {
+            margin: 20px auto;
+            width: 80%;
+            border: 1px solid #e9ecef;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        strong {
+            color: #495057;
+        }
+        p {
+            text-align: center;
+            color: #6c757d;
+        }
+        a {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #6c757d;
+            border-radius: 4px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        a:hover {
+            background-color: #5a6268;
+        }
+
+        a:active {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+<a th:href="@{/products/authList-products(token=${token})}">К списку товаров</a>
+<!-- Информация о продукте -->
+<div class="product-info">
+    <h3 th:text="${product.name}">Название продукта</h3>
+    <p><strong>Описание:</strong> <span th:text="${product.description}">Описание продукта</span></p>
+    <p><strong>Цена:</strong> <span th:text="${product.price}">Цена продукта</span> руб.</p>
+</div>
+<h2>Существующие отзывы</h2>
+
+<!-- Список существующих отзывов -->
+<div th:if="${reviews != null}">
+    <ul>
+        <li th:each="review : ${reviews}">
+            <strong>Оценка:</strong> <span th:text="${review.rating}"></span><br/>
+            <strong>Отзыв:</strong> <span th:text="${review.content}"></span><br/>
+            <strong>Автор:</strong> <span th:text="${review.author}"></span><br/>
+            <hr/>
+        </li>
+    </ul>
+</div>
+<div th:if="${reviews == null || reviews.length == 0}">
+    <p>Пока нет отзывов для этого продукта.</p>
+</div>
+<h1>Добавить отзыв о продукте</h1>
+
+
+
+<!-- Форма для добавления отзыва -->
+<form th:action="@{/frontend/add/review(productId=${product.id}, token=${token})}" method="post" >
+<!--    <input type="hidden" th:value="${productId}" name="productId"/>-->
+
+
+    <label for="content">Ваш отзыв:</label>
+    <textarea id="content" name="content" rows="4" cols="50" required></textarea>
+
+    <label for="rating">Оценка:</label>
+    <select id="rating" name="rating" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+
+    <button type="submit">Отправить отзыв</button>
+</form>
+
+<hr/>
+
+
+
+</body>
+</html>

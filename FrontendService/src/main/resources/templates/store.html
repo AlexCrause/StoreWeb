@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Добро пожаловать в наш интернет-магазин</title>
+    <link rel="stylesheet" th:href="@{/storeCss.css}">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${welcomeMessage}">Добро пожаловать в наш интернет-магазин!</h1>
+    <p th:text="${description}">Ваш универсальный магазин для невероятных товаров и выгодных предложений.</p>
+    <div class="button-group">
+        <a th:href="@{/auth/register}" class="btn">Регистрация</a>
+        <a th:href="@{/auth/login}" class="btn">Вход</a>
+        <a th:href="@{/products}" class="btn">Список продуктов</a>
+    </div>
+</div>
+</body>
+</html>
